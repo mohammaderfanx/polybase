@@ -5,7 +5,7 @@ import { Pnl, VenueBadge } from "@/components/AppHeader";
 import { Seg } from "./index";
 import { type Venue, eventById, grossUnrealized, positions, usd } from "@/lib/portfolio";
 
-export const Route = createFileRoute("/reports")({
+export const Route = createFileRoute("/_authenticated/reports")({
   head: () => ({
     meta: [
       { title: "Tax & P&L Export — PolyBase" },
