@@ -66,7 +66,7 @@ export async function fetchKalshi(keyId: string, pemRaw: string): Promise<RawPos
     const side = pos > 0 ? "Yes" : "No";
     const contracts = Math.abs(pos);
     const exposure = dollars(p, "market_exposure");
-    const m = (await kalshiGet(`/markets/${encodeURIComponent(p["ticker"])}`, keyId, pem)).market ?? {};
+    const m = (await kalshiGet(`/markets/${encodeURIComponent(p["ticker"])}`, keyId, pem))["market"] ?? {};
     const bid = side === "Yes" ? dollars(m, "yes_bid") : dollars(m, "no_bid");
     out.push({
       market_key: String(p["ticker"]),
