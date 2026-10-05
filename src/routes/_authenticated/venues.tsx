@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { RefreshCw, Plus, Wallet, KeyRound, Trash2 } from "lucide-react";
 import { VenueBadge } from "@/components/AppHeader";
 import { supabase } from "@/integrations/supabase/client";
-import { type Venue } from "@/lib/portfolio";
+import { type FeeProfile, type Venue } from "@/lib/portfolio";
 import { FEE_TIERS } from "@/lib/fees";
 import { accountsQ, profileQ } from "@/lib/queries";
 import { kalshiConfigured, syncPortfolio } from "@/lib/sync.functions";
@@ -27,7 +27,8 @@ export const Route = createFileRoute("/_authenticated/venues")({
 function Venues() {
   const qc = useQueryClient();
   const { data: list = [] } = useQuery(accountsQ);
-  const { data: profile } = useQuery(profileQ);
+  const { data: profileData } = useQuery(profileQ);
+  const profile = profileData as FeeProfile | null | undefined;
   const kalshiFn = useServerFn(kalshiConfigured);
   const { data: kalshi } = useQuery({ queryKey: ["kalshi-cfg"], queryFn: () => kalshiFn() });
   const sync = useServerFn(syncPortfolio);
@@ -139,7 +140,7 @@ function FeeProfileForm({ profile }: { profile: { polymarket_tier: string; kalsh
   const [kal, setKal] = useState(profile?.kalshi_fee_tier ?? "standard");
   const [gas, setGas] = useState(String(profile?.custom_gas_offset_usd ?? 0));
   const [saved, setSaved] = useState(false);
-  useEffect(() => { if (saved) { const t = setTimeout(() => setSaved(false), 2000); return () => clearTimeout(t); } }, [saved]);
+  useEffect(() => { if (!saved) return; const t = setTimeout(() => setSaved(false), 2000); return () => clearTimeout(t); }, [saved]);
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -153,7 +153,7 @@ function Overview() {
               <tbody>
                 {groups.map(([k, rows]) => {
                   const ev = group === "market" ? evMap.get(k) : null;
-                  const title = group === "venue" ? k : ev ? ev.event_name : rows[0].market_title;
+                  const title = group === "venue" ? k : ev ? ev.event_name : rows[0]?.market_title ?? k;
                   return <GroupRows key={k} rows={rows} pnl={pnl} title={title}
                     meta={group === "venue" ? `${rows.length} positions` : ev ? ev.category : "Unmatched"}
                     hedged={!!ev && new Set(rows.map((r) => r.venue)).size > 1} />;
