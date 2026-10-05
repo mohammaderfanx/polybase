@@ -14,7 +14,195 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      historical_snapshots: {
+        Row: {
+          id: string
+          net_fees_usd: number
+          realized_pnl_usd: number
+          timestamp: string
+          total_equity_usd: number
+          unrealized_pnl_usd: number
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          net_fees_usd?: number
+          realized_pnl_usd?: number
+          timestamp?: string
+          total_equity_usd?: number
+          unrealized_pnl_usd?: number
+          user_id: string
+        }
+        Update: {
+          id?: string
+          net_fees_usd?: number
+          realized_pnl_usd?: number
+          timestamp?: string
+          total_equity_usd?: number
+          unrealized_pnl_usd?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      matched_events: {
+        Row: {
+          category: Database["public"]["Enums"]["market_category"]
+          created_at: string
+          event_name: string
+          id: string
+          kalshi_ticker: string | null
+          normalized_outcomes_map: Json
+          polymarket_condition_id: string | null
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["market_category"]
+          created_at?: string
+          event_name: string
+          id: string
+          kalshi_ticker?: string | null
+          normalized_outcomes_map?: Json
+          polymarket_condition_id?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["market_category"]
+          created_at?: string
+          event_name?: string
+          id?: string
+          kalshi_ticker?: string | null
+          normalized_outcomes_map?: Json
+          polymarket_condition_id?: string | null
+        }
+        Relationships: []
+      }
+      positions: {
+        Row: {
+          account_id: string
+          avg_buy_price: number
+          current_price: number
+          fees_paid: number
+          id: string
+          market_key: string
+          market_title: string
+          matched_event_id: string | null
+          outcome: string
+          realized_pnl: number
+          settlement_date: string | null
+          shares: number
+          updated_at: string
+          user_id: string
+          venue: Database["public"]["Enums"]["venue"]
+        }
+        Insert: {
+          account_id: string
+          avg_buy_price?: number
+          current_price?: number
+          fees_paid?: number
+          id?: string
+          market_key: string
+          market_title: string
+          matched_event_id?: string | null
+          outcome: string
+          realized_pnl?: number
+          settlement_date?: string | null
+          shares?: number
+          updated_at?: string
+          user_id: string
+          venue: Database["public"]["Enums"]["venue"]
+        }
+        Update: {
+          account_id?: string
+          avg_buy_price?: number
+          current_price?: number
+          fees_paid?: number
+          id?: string
+          market_key?: string
+          market_title?: string
+          matched_event_id?: string | null
+          outcome?: string
+          realized_pnl?: number
+          settlement_date?: string | null
+          shares?: number
+          updated_at?: string
+          user_id?: string
+          venue?: Database["public"]["Enums"]["venue"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "positions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "venue_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "positions_matched_event_id_fkey"
+            columns: ["matched_event_id"]
+            isOneToOne: false
+            referencedRelation: "matched_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_fee_profiles: {
+        Row: {
+          custom_gas_offset_usd: number
+          id: string
+          kalshi_fee_tier: string
+          polymarket_tier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          custom_gas_offset_usd?: number
+          id?: string
+          kalshi_fee_tier?: string
+          polymarket_tier?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          custom_gas_offset_usd?: number
+          id?: string
+          kalshi_fee_tier?: string
+          polymarket_tier?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      venue_accounts: {
+        Row: {
+          created_at: string
+          id: string
+          identifier: string
+          last_error: string | null
+          last_synced_at: string | null
+          status: string
+          user_id: string
+          venue: Database["public"]["Enums"]["venue"]
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          identifier: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          status?: string
+          user_id: string
+          venue: Database["public"]["Enums"]["venue"]
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          identifier?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          status?: string
+          user_id?: string
+          venue?: Database["public"]["Enums"]["venue"]
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +211,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      market_category:
+        | "Politics"
+        | "Macro / Economics"
+        | "Tech / AI"
+        | "Pop Culture"
+      venue: "Polymarket" | "Kalshi"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +343,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      market_category: [
+        "Politics",
+        "Macro / Economics",
+        "Tech / AI",
+        "Pop Culture",
+      ],
+      venue: ["Polymarket", "Kalshi"],
+    },
   },
 } as const
