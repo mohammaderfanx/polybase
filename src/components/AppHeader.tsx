@@ -1,6 +1,8 @@
-import { Link } from "@tanstack/react-router";
-import { Plus, Zap } from "lucide-react";
-import { accounts } from "@/lib/portfolio";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { LogOut, Plus } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { accountsQ } from "@/lib/queries";
 
 const nav = [
   { to: "/", label: "Command" },
@@ -9,6 +11,14 @@ const nav = [
 ] as const;
 
 export function AppHeader() {
+  const { data: accounts = [] } = useQuery(accountsQ);
+  const qc = useQueryClient();
+  const navigate = useNavigate();
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    qc.clear();
+    navigate({ to: "/auth" });
+  };
   return (
     <header className="sticky top-0 z-20 border-b bg-background/95 backdrop-blur">
       <div className="mx-auto flex h-11 max-w-[1600px] items-center gap-6 px-4">
@@ -18,31 +28,29 @@ export function AppHeader() {
         </Link>
         <nav className="flex gap-1">
           {nav.map((n) => (
-            <Link
-              key={n.to}
-              to={n.to}
-              activeOptions={{ exact: true }}
-              className="rounded-sm px-2.5 py-1 font-mono text-xs text-muted-foreground hover:text-foreground data-[status=active]:bg-accent data-[status=active]:text-foreground"
-            >
+            <Link key={n.to} to={n.to} activeOptions={{ exact: true }}
+              className="rounded-sm px-2.5 py-1 font-mono text-xs text-muted-foreground hover:text-foreground data-[status=active]:bg-accent data-[status=active]:text-foreground">
               {n.label}
             </Link>
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-4">
           <div className="hidden items-center gap-3 font-mono text-[11px] md:flex">
-            {accounts.map((a) => (
-              <span key={a.id} className="flex items-center gap-1.5 text-muted-foreground">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gain" />
-                {a.venue}: <span className="text-foreground">Connected</span>
-              </span>
-            ))}
+            {(["Polymarket", "Kalshi"] as const).map((v) => {
+              const acc = accounts.filter((a) => a.venue === v);
+              const err = acc.some((a) => a.status === "error");
+              return (
+                <span key={v} className="flex items-center gap-1.5 text-muted-foreground">
+                  <span className={`h-1.5 w-1.5 rounded-full ${!acc.length ? "bg-muted-foreground" : err ? "bg-loss" : "bg-gain animate-pulse"}`} />
+                  {v}: <span className="text-foreground">{!acc.length ? "None" : err ? "Error" : "Connected"}</span>
+                </span>
+              );
+            })}
           </div>
           <Link to="/venues" className="flex items-center gap-1 rounded-sm border px-2 py-1 font-mono text-[11px] hover:bg-accent">
             <Plus className="h-3 w-3" /> Add Venue
           </Link>
-          <span className="flex items-center gap-1 rounded-sm bg-primary px-2 py-1 font-mono text-[11px] font-semibold text-primary-foreground">
-            <Zap className="h-3 w-3" /> PRO
-          </span>
+          <button onClick={signOut} aria-label="Sign out" className="text-muted-foreground hover:text-foreground"><LogOut className="h-3.5 w-3.5" /></button>
         </div>
       </div>
     </header>

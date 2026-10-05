@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Download } from "lucide-react";
 import { Pnl, VenueBadge } from "@/components/AppHeader";
 import { Seg } from "./index";
-import { type Venue, eventById, grossUnrealized, positions, usd } from "@/lib/portfolio";
+import { type Venue, grossUnrealized, usd } from "@/lib/portfolio";
+import { eventsQ, positionsQ, profileQ } from "@/lib/queries";
+import { netPnlMap } from "@/lib/fees";
 
-export const Route = createFileRoute("/reports")({
+export const Route = createFileRoute("/_authenticated/reports")({
   head: () => ({
     meta: [
       { title: "Tax & P&L Export — PolyBase" },
@@ -24,18 +27,24 @@ function Reports() {
   const [to, setTo] = useState("2026-12-31");
   const [venue, setVenue] = useState<Venue | "All">("All");
 
-  const rows = useMemo(
-    () =>
-      positions
-        .filter((p) => (venue === "All" || p.venue === venue) && p.opened_at >= from && p.opened_at <= to)
-        .map((p) => ({
-          id: p.id, venue: p.venue, event: eventById(p.matched_event_id).event_name, market: p.market_title,
-          side: p.outcome, opened: p.opened_at, settles: p.settlement_date,
-          realized_gross: p.realized_pnl, fees: p.fees_paid, realized_net: p.realized_pnl - p.fees_paid,
+  const { data: positions = [] } = useQuery(positionsQ);
+  const { data: events = [] } = useQuery(eventsQ);
+  const { data: profile = null } = useQuery(profileQ);
+  const rows = useMemo(() => {
+    const pnl = netPnlMap(positions, profile);
+    return positions
+      .filter((p) => (venue === "All" || p.venue === venue) && (!p.settlement_date || (p.settlement_date >= from && p.settlement_date <= to)))
+      .map((p) => {
+        const b = pnl.get(p.id)!;
+        const fees = +(b.feesPaid + b.gas).toFixed(2);
+        return {
+          id: p.id, venue: p.venue, event: events.find((e) => e.id === p.matched_event_id)?.event_name ?? "", market: p.market_title,
+          side: p.outcome, synced: p.updated_at.slice(0, 10), settles: p.settlement_date ?? "",
+          realized_gross: Number(p.realized_pnl), fees, realized_net: +(Number(p.realized_pnl) - fees).toFixed(2),
           unrealized: +grossUnrealized(p).toFixed(2),
-        })),
-    [from, to, venue],
-  );
+        };
+      });
+  }, [positions, events, profile, from, to, venue]);
   const tot = rows.reduce((s, r) => ({ g: s.g + r.realized_gross, f: s.f + r.fees, n: s.n + r.realized_net }), { g: 0, f: 0, n: 0 });
 
   const download = (kind: "csv" | "json") => {
@@ -76,7 +85,7 @@ function Reports() {
         <table className="w-full text-xs">
           <thead>
             <tr className="label-caps border-b text-left [&>th]:px-3 [&>th]:py-1.5 [&>th]:font-normal">
-              <th>Market</th><th>Venue</th><th>Side</th><th>Opened</th><th>Settles</th>
+              <th>Market</th><th>Venue</th><th>Side</th><th>Synced</th><th>Settles</th>
               <th className="text-right">Realized</th><th className="text-right">Fees</th><th className="text-right">Net</th><th className="text-right">Unrealized</th>
             </tr>
           </thead>
@@ -86,7 +95,7 @@ function Reports() {
                 <td className="max-w-[320px] truncate">{r.market}</td>
                 <td><VenueBadge venue={r.venue} /></td>
                 <td className="num">{r.side.toUpperCase()}</td>
-                <td className="num text-muted-foreground">{r.opened}</td>
+                <td className="num text-muted-foreground">{r.synced}</td>
                 <td className="num text-muted-foreground">{r.settles}</td>
                 <td className="text-right"><Pnl v={r.realized_gross} /></td>
                 <td className="num text-right text-muted-foreground">{usd(r.fees)}</td>
