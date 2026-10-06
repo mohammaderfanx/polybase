@@ -14,6 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      arbitrage_opportunities: {
+        Row: {
+          detected_at: string
+          direction: string
+          gross_spread_pct: number
+          id: string
+          kalshi_price_yes: number
+          liquidity_at_spread_usd: number
+          matched_event_id: string
+          net_spread_pct: number
+          poly_price_yes: number
+        }
+        Insert: {
+          detected_at?: string
+          direction?: string
+          gross_spread_pct?: number
+          id?: string
+          kalshi_price_yes?: number
+          liquidity_at_spread_usd?: number
+          matched_event_id: string
+          net_spread_pct?: number
+          poly_price_yes?: number
+        }
+        Update: {
+          detected_at?: string
+          direction?: string
+          gross_spread_pct?: number
+          id?: string
+          kalshi_price_yes?: number
+          liquidity_at_spread_usd?: number
+          matched_event_id?: string
+          net_spread_pct?: number
+          poly_price_yes?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "arbitrage_opportunities_matched_event_id_fkey"
+            columns: ["matched_event_id"]
+            isOneToOne: false
+            referencedRelation: "matched_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      execution_logs: {
+        Row: {
+          created_at: string
+          event_type: Database["public"]["Enums"]["execution_event_type"]
+          id: string
+          payload: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: Database["public"]["Enums"]["execution_event_type"]
+          id?: string
+          payload?: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: Database["public"]["Enums"]["execution_event_type"]
+          id?: string
+          payload?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       historical_snapshots: {
         Row: {
           id: string
@@ -170,6 +238,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_risk_thresholds: {
+        Row: {
+          auto_alert_email: boolean
+          delta_imbalance_threshold_pct: number
+          max_portfolio_drawdown_pct: number
+          max_single_event_exposure_usd: number
+          updated_at: string
+          user_id: string
+          webhook_url: string | null
+        }
+        Insert: {
+          auto_alert_email?: boolean
+          delta_imbalance_threshold_pct?: number
+          max_portfolio_drawdown_pct?: number
+          max_single_event_exposure_usd?: number
+          updated_at?: string
+          user_id: string
+          webhook_url?: string | null
+        }
+        Update: {
+          auto_alert_email?: boolean
+          delta_imbalance_threshold_pct?: number
+          max_portfolio_drawdown_pct?: number
+          max_single_event_exposure_usd?: number
+          updated_at?: string
+          user_id?: string
+          webhook_url?: string | null
+        }
+        Relationships: []
+      }
       venue_accounts: {
         Row: {
           created_at: string
@@ -211,6 +309,11 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      execution_event_type:
+        | "sync"
+        | "alert_triggered"
+        | "export"
+        | "rebalance_recommendation"
       market_category:
         | "Politics"
         | "Macro / Economics"
@@ -344,6 +447,12 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      execution_event_type: [
+        "sync",
+        "alert_triggered",
+        "export",
+        "rebalance_recommendation",
+      ],
       market_category: [
         "Politics",
         "Macro / Economics",
