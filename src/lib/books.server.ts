@@ -43,7 +43,7 @@ export async function kalshiBook(ticker: string, keyId: string, pemRaw: string):
 export interface EventRef { id: string; polymarket_condition_id: string | null; kalshi_ticker: string | null }
 export interface EventBooks { id: string; polyToken: string | null; poly: Book | null; kalshi: Book | null }
 
-export async function fetchAllBooks(events: EventRef[], opts: { poly: boolean; kalshi: boolean; tokens?: Record<string, string> }) {
+export async function fetchAllBooks(events: EventRef[], opts: { poly: boolean; kalshi: boolean; tokens?: Record<string, string> | undefined }) {
   const keyId = process.env["KALSHI_API_KEY_ID"];
   const pem = process.env["KALSHI_PRIVATE_KEY"];
   return Promise.all(
