@@ -33,3 +33,6 @@ export function queueBook(key: string, b: Book) {
   const flush = () => { raf = 0; const p = pending; pending = {}; useMarket.getState().setBooks(p); };
   raf = typeof requestAnimationFrame === "function" ? requestAnimationFrame(flush) : (setTimeout(flush, 16) as unknown as number);
 }
+
+/** Latest book including not-yet-flushed ticks (for incremental updates). */
+export const currentBook = (key: string): Book | undefined => pending[key] ?? useMarket.getState().books[key];

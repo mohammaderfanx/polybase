@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { applyLevel, sortBook } from "../orderbook";
-import { bookKey, queueBook, useMarket } from "../market-store";
+import { bookKey, currentBook, queueBook, useMarket } from "../market-store";
 
 const URL = "wss://ws-subscriptions-clob.polymarket.com/ws/market";
 
@@ -40,7 +40,6 @@ export function startPolymarketWs(tokenToEvent: Record<string, string>, onDown: 
   };
 
   const handle = (m: any) => {
-    const books = useMarket.getState().books;
     if (m.event_type === "book") {
       const ev = tokenToEvent[m.asset_id];
       if (!ev) return;
@@ -52,7 +51,7 @@ export function startPolymarketWs(tokenToEvent: Record<string, string>, onDown: 
         const ev = tokenToEvent[c.asset_id ?? m.asset_id];
         if (!ev) continue;
         const k = bookKey("Polymarket", ev);
-        const cur = books[k] ?? { bids: [], asks: [], ts: 0 };
+        const cur = currentBook(k) ?? { bids: [], asks: [], ts: 0 };
         queueBook(k, applyLevel(cur, c.side === "BUY" ? "bids" : "asks", +c.price, +c.size));
       }
     }
