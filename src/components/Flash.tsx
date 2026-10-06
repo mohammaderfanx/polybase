@@ -12,6 +12,7 @@ export function Flash({ value, children, className = "" }: { value: number | nul
       return () => clearTimeout(t);
     }
     prev.current = value;
+    return undefined;
   }, [value]);
   return <span className={`${dir === "up" ? "flash-up" : dir === "down" ? "flash-down" : ""} rounded-sm px-0.5 ${className}`}>{children}</span>;
 }
