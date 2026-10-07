@@ -1,14 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeftRight, RefreshCw } from "lucide-react";
+import { ArrowLeftRight, ChevronRight, RefreshCw } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Pnl, VenueBadge } from "@/components/AppHeader";
 import { type Category, type Position, type Venue, categories, cents, costBasis, daysUntil, marketValue, usd } from "@/lib/portfolio";
 import { netPnlMap, type PnlBreakdown } from "@/lib/fees";
 import { accountsQ, eventsQ, positionsQ, profileQ, snapshotsQ } from "@/lib/queries";
 import { syncPortfolio } from "@/lib/sync.functions";
+import { useArbs } from "@/lib/useArbs";
+import { Flash } from "@/components/Flash";
+import { CrossVenueDepth } from "@/components/DepthChart";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
@@ -87,12 +90,15 @@ function Overview() {
           <RefreshCw className={`h-3 w-3 ${m.isPending ? "animate-spin" : ""}`} /> Sync all venues
         </button>
       </div>
+      <div className="grid gap-3 xl:grid-cols-[1fr_360px]">
       <section className="grid grid-cols-2 gap-px overflow-hidden rounded-sm border bg-border lg:grid-cols-4">
         <Kpi label="Total Portfolio Value" value={<span className="num">{usd(totalValue)}</span>} sub={`${positions.length} open positions · ${accounts.length} accounts`} />
         <Kpi label="True Net P&L (fee-adj)" value={<Pnl v={allTime} />} sub={<>since last sync <Pnl v={day} /> · fees {usd(fees)}</>} />
         <Kpi label="Open Exposure" value={<span className="num">{usd(exposure)}</span>} sub="cost basis at risk" />
         <Kpi label="Pending Settlements · 7d" value={<span className="num">{pending.length}</span>} sub={<span className="num">{usd(pending.reduce((s, p) => s + marketValue(p), 0))} resolving</span>} />
       </section>
+      <SpreadWidget />
+      </div>
 
       <div className="grid gap-3 xl:grid-cols-[1fr_360px]">
         <section className="panel p-3">
@@ -207,6 +213,7 @@ function Overview() {
 
 function GroupRows({ rows, pnl, title, meta, hedged }: { rows: Position[]; pnl: Map<string, PnlBreakdown>; title: string; meta: string; hedged: boolean }) {
   const net = rows.reduce((s, p) => s + pnl.get(p.id)!.net, 0);
+  const [open, setOpen] = useState<string | null>(null);
   return (
     <>
       <tr className="border-b bg-muted/50">
@@ -223,9 +230,17 @@ function GroupRows({ rows, pnl, title, meta, hedged }: { rows: Position[]; pnl: 
       </tr>
       {rows.map((p) => {
         const b = pnl.get(p.id)!;
+        const isOpen = open === p.id;
         return (
-          <tr key={p.id} className="border-b hover:bg-accent/50 [&>td]:px-3 [&>td]:py-1.5">
-            <td className="max-w-[280px] truncate pl-6 text-muted-foreground">{p.market_title}</td>
+          <Fragment key={p.id}>
+          <tr className="border-b hover:bg-accent/50 [&>td]:px-3 [&>td]:py-1.5">
+            <td className="max-w-[280px] truncate pl-6 text-muted-foreground">
+              {p.matched_event_id ? (
+                <button onClick={() => setOpen(isOpen ? null : p.id)} title="Orderbook depth" className="mr-1 align-middle text-muted-foreground hover:text-primary">
+                  <ChevronRight className={`inline h-3 w-3 transition-transform ${isOpen ? "rotate-90" : ""}`} />
+                </button>
+              ) : null}
+              {p.market_title}</td>
             <td><VenueBadge venue={p.venue} /></td>
             <td><span className={`num font-semibold ${p.outcome === "Yes" ? "text-gain" : "text-loss"}`}>{p.outcome.toUpperCase()}</span></td>
             <td className="num text-right">{Number(p.shares).toLocaleString()}</td>
@@ -234,9 +249,35 @@ function GroupRows({ rows, pnl, title, meta, hedged }: { rows: Position[]; pnl: 
             <td className="num text-right text-muted-foreground" title={`paid ${usd(b.feesPaid)} · gas ${usd(b.gas)} · est. exit ${usd(b.exitFee)}`}>{usd(b.feesPaid + b.gas + b.exitFee)}</td>
             <td className="text-right"><Pnl v={b.net} /></td>
           </tr>
+          {isOpen && p.matched_event_id && (
+            <tr className="border-b bg-muted/30"><td colSpan={8} className="p-3"><CrossVenueDepth eventId={p.matched_event_id} /></td></tr>
+          )}
+          </Fragment>
         );
       })}
     </>
+  );
+}
+
+function SpreadWidget() {
+  const rows = useArbs().slice(0, 5);
+  return (
+    <section className="panel p-3">
+      <div className="mb-2 flex items-center justify-between">
+        <h2 className="label-caps">Spread Scanner · net</h2>
+        <Link to="/arbitrage" className="font-mono text-[10px] text-primary hover:underline">Open scanner →</Link>
+      </div>
+      <ul className="divide-y text-xs">
+        {rows.map(({ event, r }) => (
+          <li key={event.id} className="flex items-center gap-2 py-1">
+            <span className="flex-1 truncate">{event.event_name}</span>
+            <Flash value={r?.netSpreadPct} className={`num ${r?.feasible ? "text-gain font-semibold" : "text-muted-foreground"}`}>{r ? `${r.netSpreadPct.toFixed(2)}%` : "—"}</Flash>
+            <span className="num w-16 text-right text-[10px] text-muted-foreground">{r?.feasible ? usd(r.costUsd) : "no edge"}</span>
+          </li>
+        ))}
+        {!rows.length && <li className="py-3 text-center text-[11px] text-muted-foreground">No cross-listed events yet.</li>}
+      </ul>
+    </section>
   );
 }
 
