@@ -27,3 +27,7 @@ export const snapshotsQ = queryOptions({
   queryKey: ["snapshots"],
   queryFn: () => unwrap(supabase.from("historical_snapshots").select("*").order("timestamp").limit(500)),
 });
+export const thresholdsQ = queryOptions({
+  queryKey: ["thresholds"],
+  queryFn: () => unwrap(supabase.from("user_risk_thresholds").select("*").maybeSingle()),
+});

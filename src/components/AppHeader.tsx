@@ -1,17 +1,18 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { LogOut, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { accountsQ } from "@/lib/queries";
+import { FeedManager, FeedStatus } from "@/components/FeedManager";
 
 const nav = [
   { to: "/", label: "Command" },
+  { to: "/arbitrage", label: "Arbitrage" },
+  { to: "/risk", label: "Risk" },
   { to: "/venues", label: "Venues" },
   { to: "/reports", label: "Reports" },
 ] as const;
 
 export function AppHeader() {
-  const { data: accounts = [] } = useQuery(accountsQ);
   const qc = useQueryClient();
   const navigate = useNavigate();
   const signOut = async () => {
@@ -21,6 +22,7 @@ export function AppHeader() {
   };
   return (
     <header className="sticky top-0 z-20 border-b bg-background/95 backdrop-blur">
+      <FeedManager />
       <div className="mx-auto flex h-11 max-w-[1600px] items-center gap-6 px-4">
         <Link to="/" className="flex items-center gap-2 font-mono text-sm font-bold tracking-tight">
           <span className="grid h-5 w-5 place-items-center rounded-sm bg-primary text-[11px] text-primary-foreground">P</span>
@@ -36,16 +38,7 @@ export function AppHeader() {
         </nav>
         <div className="ml-auto flex items-center gap-4">
           <div className="hidden items-center gap-3 font-mono text-[11px] md:flex">
-            {(["Polymarket", "Kalshi"] as const).map((v) => {
-              const acc = accounts.filter((a) => a.venue === v);
-              const err = acc.some((a) => a.status === "error");
-              return (
-                <span key={v} className="flex items-center gap-1.5 text-muted-foreground">
-                  <span className={`h-1.5 w-1.5 rounded-full ${!acc.length ? "bg-muted-foreground" : err ? "bg-loss" : "bg-gain animate-pulse"}`} />
-                  {v}: <span className="text-foreground">{!acc.length ? "None" : err ? "Error" : "Connected"}</span>
-                </span>
-              );
-            })}
+            <FeedStatus />
           </div>
           <Link to="/venues" className="flex items-center gap-1 rounded-sm border px-2 py-1 font-mono text-[11px] hover:bg-accent">
             <Plus className="h-3 w-3" /> Add Venue
