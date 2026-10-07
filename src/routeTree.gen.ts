@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedArbitrageRouteImport } from './routes/_authenticated/arbitrage'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedVenuesRouteImport } from './routes/_authenticated/venues'
 
@@ -29,6 +30,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedArbitrageRoute = AuthenticatedArbitrageRouteImport.update({
+  id: '/arbitrage',
+  path: '/arbitrage',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
@@ -43,11 +49,13 @@ const AuthenticatedVenuesRoute = AuthenticatedVenuesRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/arbitrage': typeof AuthenticatedArbitrageRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/venues': typeof AuthenticatedVenuesRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/arbitrage': typeof AuthenticatedArbitrageRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/venues': typeof AuthenticatedVenuesRoute
   '/': typeof AuthenticatedIndexRoute
@@ -56,19 +64,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/arbitrage': typeof AuthenticatedArbitrageRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/venues': typeof AuthenticatedVenuesRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/reports' | '/venues'
+  fullPaths: '/' | '/auth' | '/arbitrage' | '/reports' | '/venues'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/reports' | '/venues' | '/'
+  to: '/auth' | '/arbitrage' | '/reports' | '/venues' | '/'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/arbitrage'
     | '/_authenticated/reports'
     | '/_authenticated/venues'
     | '/_authenticated/'
@@ -102,6 +112,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/arbitrage': {
+      id: '/_authenticated/arbitrage'
+      path: '/arbitrage'
+      fullPath: '/arbitrage'
+      preLoaderRoute: typeof AuthenticatedArbitrageRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/reports': {
       id: '/_authenticated/reports'
       path: '/reports'
@@ -120,12 +137,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedArbitrageRoute: typeof AuthenticatedArbitrageRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedVenuesRoute: typeof AuthenticatedVenuesRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedArbitrageRoute: AuthenticatedArbitrageRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedVenuesRoute: AuthenticatedVenuesRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,

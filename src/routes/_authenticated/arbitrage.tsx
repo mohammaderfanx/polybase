@@ -39,7 +39,7 @@ function ArbPage() {
   const shown = rows.filter(({ event, r }) =>
     (cat === "All" || event.category === cat) &&
     (feas === "All" || r?.feasible) &&
-    (r ? r.netSpreadPct >= minSpread || minSpread <= 0 && !r.feasible ? (r.netSpreadPct >= minSpread || minSpread === 0) : false : minSpread === 0 && minLiq === 0) &&
+    (minSpread === 0 || (!!r && r.netSpreadPct >= minSpread)) &&
     (minLiq === 0 || (r?.costUsd ?? 0) >= minLiq));
 
   const copy = async (name: string, id: string, r: NonNullable<(typeof rows)[number]["r"]>) => {
