@@ -16,6 +16,7 @@ import { Route as AuthenticatedArbitrageRouteImport } from './routes/_authentica
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedRiskRouteImport } from './routes/_authenticated/risk'
 import { Route as AuthenticatedVenuesRouteImport } from './routes/_authenticated/venues'
+import { Route as ApiPublicHooksRiskAlertsRouteImport } from './routes/api/public/hooks/risk-alerts'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -51,6 +52,12 @@ const AuthenticatedVenuesRoute = AuthenticatedVenuesRouteImport.update({
   path: '/venues',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicHooksRiskAlertsRoute =
+  ApiPublicHooksRiskAlertsRouteImport.update({
+    id: '/api/public/hooks/risk-alerts',
+    path: '/api/public/hooks/risk-alerts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/reports': typeof AuthenticatedReportsRoute
   '/risk': typeof AuthenticatedRiskRoute
   '/venues': typeof AuthenticatedVenuesRoute
+  '/api/public/hooks/risk-alerts': typeof ApiPublicHooksRiskAlertsRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -67,6 +75,7 @@ export interface FileRoutesByTo {
   '/risk': typeof AuthenticatedRiskRoute
   '/venues': typeof AuthenticatedVenuesRoute
   '/': typeof AuthenticatedIndexRoute
+  '/api/public/hooks/risk-alerts': typeof ApiPublicHooksRiskAlertsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,12 +86,27 @@ export interface FileRoutesById {
   '/_authenticated/risk': typeof AuthenticatedRiskRoute
   '/_authenticated/venues': typeof AuthenticatedVenuesRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/api/public/hooks/risk-alerts': typeof ApiPublicHooksRiskAlertsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/arbitrage' | '/reports' | '/risk' | '/venues'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/arbitrage'
+    | '/reports'
+    | '/risk'
+    | '/venues'
+    | '/api/public/hooks/risk-alerts'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/arbitrage' | '/reports' | '/risk' | '/venues' | '/'
+  to:
+    | '/auth'
+    | '/arbitrage'
+    | '/reports'
+    | '/risk'
+    | '/venues'
+    | '/'
+    | '/api/public/hooks/risk-alerts'
   id:
     | '__root__'
     | '/_authenticated'
@@ -92,11 +116,13 @@ export interface FileRouteTypes {
     | '/_authenticated/risk'
     | '/_authenticated/venues'
     | '/_authenticated/'
+    | '/api/public/hooks/risk-alerts'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicHooksRiskAlertsRoute: typeof ApiPublicHooksRiskAlertsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -150,6 +176,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVenuesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/hooks/risk-alerts': {
+      id: '/api/public/hooks/risk-alerts'
+      path: '/api/public/hooks/risk-alerts'
+      fullPath: '/api/public/hooks/risk-alerts'
+      preLoaderRoute: typeof ApiPublicHooksRiskAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -175,6 +208,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicHooksRiskAlertsRoute: ApiPublicHooksRiskAlertsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
