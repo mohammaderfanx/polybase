@@ -82,6 +82,48 @@ export type Database = {
         }
         Relationships: []
       }
+      execution_webhooks: {
+        Row: {
+          created_at: string
+          dry_run: boolean
+          event_trigger: Database["public"]["Enums"]["webhook_trigger"]
+          id: string
+          is_active: boolean
+          name: string
+          secret_hint: string
+          secret_key_hash: string
+          target_url: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dry_run?: boolean
+          event_trigger: Database["public"]["Enums"]["webhook_trigger"]
+          id?: string
+          is_active?: boolean
+          name?: string
+          secret_hint?: string
+          secret_key_hash: string
+          target_url: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dry_run?: boolean
+          event_trigger?: Database["public"]["Enums"]["webhook_trigger"]
+          id?: string
+          is_active?: boolean
+          name?: string
+          secret_hint?: string
+          secret_key_hash?: string
+          target_url?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       historical_snapshots: {
         Row: {
           id: string
@@ -241,6 +283,7 @@ export type Database = {
       user_risk_thresholds: {
         Row: {
           auto_alert_email: boolean
+          automation_killed: boolean
           delta_imbalance_threshold_pct: number
           max_portfolio_drawdown_pct: number
           max_single_event_exposure_usd: number
@@ -250,6 +293,7 @@ export type Database = {
         }
         Insert: {
           auto_alert_email?: boolean
+          automation_killed?: boolean
           delta_imbalance_threshold_pct?: number
           max_portfolio_drawdown_pct?: number
           max_single_event_exposure_usd?: number
@@ -259,6 +303,7 @@ export type Database = {
         }
         Update: {
           auto_alert_email?: boolean
+          automation_killed?: boolean
           delta_imbalance_threshold_pct?: number
           max_portfolio_drawdown_pct?: number
           max_single_event_exposure_usd?: number
@@ -301,12 +346,97 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_deliveries: {
+        Row: {
+          attempts: number
+          created_at: string
+          event_trigger: Database["public"]["Enums"]["webhook_trigger"]
+          id: string
+          idempotency_key: string
+          is_test: boolean
+          latency_ms: number | null
+          next_retry_at: string | null
+          payload: Json
+          response_body: string | null
+          response_status: number | null
+          status: string
+          updated_at: string
+          user_id: string
+          webhook_id: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          event_trigger: Database["public"]["Enums"]["webhook_trigger"]
+          id?: string
+          idempotency_key: string
+          is_test?: boolean
+          latency_ms?: number | null
+          next_retry_at?: string | null
+          payload: Json
+          response_body?: string | null
+          response_status?: number | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          webhook_id: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          event_trigger?: Database["public"]["Enums"]["webhook_trigger"]
+          id?: string
+          idempotency_key?: string
+          is_test?: boolean
+          latency_ms?: number | null
+          next_retry_at?: string | null
+          payload?: Json
+          response_body?: string | null
+          response_status?: number | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          webhook_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_deliveries_webhook_id_fkey"
+            columns: ["webhook_id"]
+            isOneToOne: false
+            referencedRelation: "execution_webhooks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhook_secrets: {
+        Row: {
+          secret: string
+          webhook_id: string
+        }
+        Insert: {
+          secret: string
+          webhook_id: string
+        }
+        Update: {
+          secret?: string
+          webhook_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_secrets_webhook_id_fkey"
+            columns: ["webhook_id"]
+            isOneToOne: true
+            referencedRelation: "execution_webhooks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_cron_token: { Args: { t: string }; Returns: boolean }
     }
     Enums: {
       execution_event_type:
@@ -320,6 +450,11 @@ export type Database = {
         | "Tech / AI"
         | "Pop Culture"
       venue: "Polymarket" | "Kalshi"
+      webhook_trigger:
+        | "arb_found"
+        | "delta_breach"
+        | "stop_loss_hit"
+        | "settlement_imminent"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -460,6 +595,12 @@ export const Constants = {
         "Pop Culture",
       ],
       venue: ["Polymarket", "Kalshi"],
+      webhook_trigger: [
+        "arb_found",
+        "delta_breach",
+        "stop_loss_hit",
+        "settlement_imminent",
+      ],
     },
   },
 } as const
