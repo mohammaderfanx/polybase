@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Download } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { logEvent } from "@/lib/books.functions";
 import { Pnl, VenueBadge } from "@/components/AppHeader";
 import { Seg } from "./index";
 import { type Venue, grossUnrealized, usd } from "@/lib/portfolio";
@@ -47,7 +49,9 @@ function Reports() {
   }, [positions, events, profile, from, to, venue]);
   const tot = rows.reduce((s, r) => ({ g: s.g + r.realized_gross, f: s.f + r.fees, n: s.n + r.realized_net }), { g: 0, f: 0, n: 0 });
 
+  const log = useServerFn(logEvent);
   const download = (kind: "csv" | "json") => {
+    log({ data: { event_type: "export", payload: { kind, from, to, venue, rows: rows.length } } }).catch(() => {});
     let body: string;
     if (kind === "json") body = JSON.stringify({ from, to, venue, totals: tot, rows }, null, 2);
     else {

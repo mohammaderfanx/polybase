@@ -71,5 +71,6 @@ export const syncPortfolio = createServerFn({ method: "POST" })
         user_id: userId, total_equity_usd: equity, unrealized_pnl_usd: unreal, realized_pnl_usd: realized, net_fees_usd: fees,
       });
     }
+    await supabase.from("execution_logs").insert({ user_id: userId, event_type: "sync", payload: { results, equity } as never });
     return { results };
   });
