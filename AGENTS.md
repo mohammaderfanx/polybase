@@ -13,3 +13,7 @@
 - Venue API calls (Polymarket data API, Kalshi signed REST) live in `src/lib/venues.server.ts` and run only inside the `syncPortfolio` server fn — keeps keys and signing server-side.
 - Fee-adjusted P&L is computed by the pure `src/lib/fees.ts` engine on read, not stored — fee-tier changes apply instantly without resync.
 - Kalshi credentials are app-level secrets (single owner account), not per-user — per-user Kalshi keys would need encrypted storage.
+- Live orderbooks: browser connects directly to Polymarket's public WS; Kalshi books come from a signed REST poll via the `getBooks` server fn — Workers can't hold long-lived venue sockets.
+- Tick state lives in a Zustand store with rAF-batched writes (`market-store.ts`); components subscribe to slices to avoid re-render storms.
+- Arbitrage math (`arb.ts`) and delta/hedging math (`delta.ts`) are pure and shared by UI and the alert route; spreads are always net of fees, gas and slippage.
+- Risk alerts run in `/api/public/hooks/risk-alerts`, guarded by the cron secret, deduped via `execution_logs` (1/h per alert key).
