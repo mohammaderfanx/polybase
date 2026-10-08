@@ -1,3 +1,4 @@
+import type { Database } from "@/integrations/supabase/types";
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -29,5 +30,5 @@ export const snapshotsQ = queryOptions({
 });
 export const thresholdsQ = queryOptions({
   queryKey: ["thresholds"],
-  queryFn: () => unwrap(supabase.from("user_risk_thresholds").select("*").maybeSingle()),
+  queryFn: async () => (await unwrap(supabase.from("user_risk_thresholds").select("*").maybeSingle())) as Database["public"]["Tables"]["user_risk_thresholds"]["Row"] | null,
 });
