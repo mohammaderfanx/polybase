@@ -16,4 +16,5 @@
 - Live orderbooks: browser connects directly to Polymarket's public WS; Kalshi books come from a signed REST poll via the `getBooks` server fn — Workers can't hold long-lived venue sockets.
 - Tick state lives in a Zustand store with rAF-batched writes (`market-store.ts`); components subscribe to slices to avoid re-render storms.
 - Arbitrage math (`arb.ts`) and delta/hedging math (`delta.ts`) are pure and shared by UI and the alert route; spreads are always net of fees, gas and slippage.
-- Risk alerts run in `/api/public/hooks/risk-alerts`, guarded by the cron secret, deduped via `execution_logs` (1/h per alert key).
+- The 5-min scheduler calls `/api/public/hooks/risk-alerts` with a token kept in the non-API `private.cron_config` table (checked via the service-only `check_cron_token` RPC) — pg_cron cannot read app secrets.
+- Webhook bridge (`webhooks.server.ts`): signing keys live in service-only `webhook_secrets`; deliveries dedupe on (webhook, idempotency key), new hooks start in dry-run, a per-user kill switch on `user_risk_thresholds` stops all sends, retries back off over 3 attempts.

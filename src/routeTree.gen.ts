@@ -16,6 +16,7 @@ import { Route as AuthenticatedArbitrageRouteImport } from './routes/_authentica
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedRiskRouteImport } from './routes/_authenticated/risk'
 import { Route as AuthenticatedVenuesRouteImport } from './routes/_authenticated/venues'
+import { Route as AuthenticatedSettingsWebhooksRouteImport } from './routes/_authenticated/settings.webhooks'
 import { Route as ApiPublicHooksRiskAlertsRouteImport } from './routes/api/public/hooks/risk-alerts'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -52,6 +53,12 @@ const AuthenticatedVenuesRoute = AuthenticatedVenuesRouteImport.update({
   path: '/venues',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSettingsWebhooksRoute =
+  AuthenticatedSettingsWebhooksRouteImport.update({
+    id: '/settings/webhooks',
+    path: '/settings/webhooks',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicHooksRiskAlertsRoute =
   ApiPublicHooksRiskAlertsRouteImport.update({
     id: '/api/public/hooks/risk-alerts',
@@ -66,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/reports': typeof AuthenticatedReportsRoute
   '/risk': typeof AuthenticatedRiskRoute
   '/venues': typeof AuthenticatedVenuesRoute
+  '/settings/webhooks': typeof AuthenticatedSettingsWebhooksRoute
   '/api/public/hooks/risk-alerts': typeof ApiPublicHooksRiskAlertsRoute
 }
 export interface FileRoutesByTo {
@@ -75,6 +83,7 @@ export interface FileRoutesByTo {
   '/risk': typeof AuthenticatedRiskRoute
   '/venues': typeof AuthenticatedVenuesRoute
   '/': typeof AuthenticatedIndexRoute
+  '/settings/webhooks': typeof AuthenticatedSettingsWebhooksRoute
   '/api/public/hooks/risk-alerts': typeof ApiPublicHooksRiskAlertsRoute
 }
 export interface FileRoutesById {
@@ -86,6 +95,7 @@ export interface FileRoutesById {
   '/_authenticated/risk': typeof AuthenticatedRiskRoute
   '/_authenticated/venues': typeof AuthenticatedVenuesRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/settings/webhooks': typeof AuthenticatedSettingsWebhooksRoute
   '/api/public/hooks/risk-alerts': typeof ApiPublicHooksRiskAlertsRoute
 }
 export interface FileRouteTypes {
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/risk'
     | '/venues'
+    | '/settings/webhooks'
     | '/api/public/hooks/risk-alerts'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/risk'
     | '/venues'
     | '/'
+    | '/settings/webhooks'
     | '/api/public/hooks/risk-alerts'
   id:
     | '__root__'
@@ -116,6 +128,7 @@ export interface FileRouteTypes {
     | '/_authenticated/risk'
     | '/_authenticated/venues'
     | '/_authenticated/'
+    | '/_authenticated/settings/webhooks'
     | '/api/public/hooks/risk-alerts'
   fileRoutesById: FileRoutesById
 }
@@ -176,6 +189,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVenuesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings/webhooks': {
+      id: '/_authenticated/settings/webhooks'
+      path: '/settings/webhooks'
+      fullPath: '/settings/webhooks'
+      preLoaderRoute: typeof AuthenticatedSettingsWebhooksRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/hooks/risk-alerts': {
       id: '/api/public/hooks/risk-alerts'
       path: '/api/public/hooks/risk-alerts'
@@ -192,6 +212,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRiskRoute: typeof AuthenticatedRiskRoute
   AuthenticatedVenuesRoute: typeof AuthenticatedVenuesRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedSettingsWebhooksRoute: typeof AuthenticatedSettingsWebhooksRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -200,6 +221,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRiskRoute: AuthenticatedRiskRoute,
   AuthenticatedVenuesRoute: AuthenticatedVenuesRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedSettingsWebhooksRoute: AuthenticatedSettingsWebhooksRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
