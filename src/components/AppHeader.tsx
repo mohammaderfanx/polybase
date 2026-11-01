@@ -11,6 +11,7 @@ const nav = [
   { to: "/venues", label: "Venues" },
   { to: "/settings/webhooks", label: "Automation" },
   { to: "/reports", label: "Reports" },
+  { to: "/profile", label: "Profile" },
 ] as const;
 
 export function AppHeader() {
@@ -41,6 +42,7 @@ export function AppHeader() {
           <div className="hidden items-center gap-3 font-mono text-[11px] md:flex">
             <FeedStatus />
           </div>
+          <Link to="/leaderboard" search={{ sort: "roi" }} className="font-mono text-[11px] text-muted-foreground hover:text-foreground">Leaderboard</Link>
           <Link to="/venues" className="flex items-center gap-1 rounded-sm border px-2 py-1 font-mono text-[11px] hover:bg-accent">
             <Plus className="h-3 w-3" /> Add Venue
           </Link>

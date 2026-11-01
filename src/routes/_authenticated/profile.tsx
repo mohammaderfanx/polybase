@@ -38,7 +38,7 @@ function ProfileBuilder() {
     try {
       const handle = f.handle.trim().toLowerCase();
       if (!/^[a-z0-9_]{3,24}$/.test(handle)) throw new Error("Handle: 3–24 lowercase letters, numbers or _");
-      if (!f.hide_absolute_values && !me?.hide_absolute_values === false && !confirm("Show dollar amounts publicly?")) return;
+      if (!f.hide_absolute_values && (me?.hide_absolute_values ?? true) && !confirm("Show dollar amounts publicly?")) return;
       const row = { ...f, handle };
       if (me) { const { error } = await supabase.from("public_portfolios").update(row).eq("id", me.id); if (error) throw error; }
       else { const { data: u } = await supabase.auth.getUser(); const { error } = await supabase.from("public_portfolios").insert({ ...row, user_id: u.user!.id }); if (error) throw error; }
