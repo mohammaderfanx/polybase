@@ -11,11 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedArbitrageRouteImport } from './routes/_authenticated/arbitrage'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedRiskRouteImport } from './routes/_authenticated/risk'
 import { Route as AuthenticatedVenuesRouteImport } from './routes/_authenticated/venues'
+import { Route as UHandleRouteImport } from './routes/u.$handle'
 import { Route as AuthenticatedSettingsWebhooksRouteImport } from './routes/_authenticated/settings.webhooks'
 import { Route as ApiPublicHooksRiskAlertsRouteImport } from './routes/api/public/hooks/risk-alerts'
 
@@ -28,6 +31,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -36,6 +44,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
 const AuthenticatedArbitrageRoute = AuthenticatedArbitrageRouteImport.update({
   id: '/arbitrage',
   path: '/arbitrage',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
@@ -53,6 +66,11 @@ const AuthenticatedVenuesRoute = AuthenticatedVenuesRouteImport.update({
   path: '/venues',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const UHandleRoute = UHandleRouteImport.update({
+  id: '/u/$handle',
+  path: '/u/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedSettingsWebhooksRoute =
   AuthenticatedSettingsWebhooksRouteImport.update({
     id: '/settings/webhooks',
@@ -69,19 +87,25 @@ const ApiPublicHooksRiskAlertsRoute =
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/arbitrage': typeof AuthenticatedArbitrageRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/risk': typeof AuthenticatedRiskRoute
   '/venues': typeof AuthenticatedVenuesRoute
+  '/u/$handle': typeof UHandleRoute
   '/settings/webhooks': typeof AuthenticatedSettingsWebhooksRoute
   '/api/public/hooks/risk-alerts': typeof ApiPublicHooksRiskAlertsRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/arbitrage': typeof AuthenticatedArbitrageRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/risk': typeof AuthenticatedRiskRoute
   '/venues': typeof AuthenticatedVenuesRoute
+  '/u/$handle': typeof UHandleRoute
   '/': typeof AuthenticatedIndexRoute
   '/settings/webhooks': typeof AuthenticatedSettingsWebhooksRoute
   '/api/public/hooks/risk-alerts': typeof ApiPublicHooksRiskAlertsRoute
@@ -90,10 +114,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/_authenticated/arbitrage': typeof AuthenticatedArbitrageRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/risk': typeof AuthenticatedRiskRoute
   '/_authenticated/venues': typeof AuthenticatedVenuesRoute
+  '/u/$handle': typeof UHandleRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/settings/webhooks': typeof AuthenticatedSettingsWebhooksRoute
   '/api/public/hooks/risk-alerts': typeof ApiPublicHooksRiskAlertsRoute
@@ -103,19 +130,25 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/leaderboard'
     | '/arbitrage'
+    | '/profile'
     | '/reports'
     | '/risk'
     | '/venues'
+    | '/u/$handle'
     | '/settings/webhooks'
     | '/api/public/hooks/risk-alerts'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/leaderboard'
     | '/arbitrage'
+    | '/profile'
     | '/reports'
     | '/risk'
     | '/venues'
+    | '/u/$handle'
     | '/'
     | '/settings/webhooks'
     | '/api/public/hooks/risk-alerts'
@@ -123,10 +156,13 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/auth'
+    | '/leaderboard'
     | '/_authenticated/arbitrage'
+    | '/_authenticated/profile'
     | '/_authenticated/reports'
     | '/_authenticated/risk'
     | '/_authenticated/venues'
+    | '/u/$handle'
     | '/_authenticated/'
     | '/_authenticated/settings/webhooks'
     | '/api/public/hooks/risk-alerts'
@@ -135,6 +171,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  LeaderboardRoute: typeof LeaderboardRoute
+  UHandleRoute: typeof UHandleRoute
   ApiPublicHooksRiskAlertsRoute: typeof ApiPublicHooksRiskAlertsRoute
 }
 
@@ -154,6 +192,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/': {
       id: '/_authenticated/'
       path: '/'
@@ -166,6 +211,13 @@ declare module '@tanstack/react-router' {
       path: '/arbitrage'
       fullPath: '/arbitrage'
       preLoaderRoute: typeof AuthenticatedArbitrageRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/reports': {
@@ -189,6 +241,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVenuesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/u/$handle': {
+      id: '/u/$handle'
+      path: '/u/$handle'
+      fullPath: '/u/$handle'
+      preLoaderRoute: typeof UHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/settings/webhooks': {
       id: '/_authenticated/settings/webhooks'
       path: '/settings/webhooks'
@@ -208,6 +267,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedArbitrageRoute: typeof AuthenticatedArbitrageRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedRiskRoute: typeof AuthenticatedRiskRoute
   AuthenticatedVenuesRoute: typeof AuthenticatedVenuesRoute
@@ -217,6 +277,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedArbitrageRoute: AuthenticatedArbitrageRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedRiskRoute: AuthenticatedRiskRoute,
   AuthenticatedVenuesRoute: AuthenticatedVenuesRoute,
@@ -230,6 +291,8 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  LeaderboardRoute: LeaderboardRoute,
+  UHandleRoute: UHandleRoute,
   ApiPublicHooksRiskAlertsRoute: ApiPublicHooksRiskAlertsRoute,
 }
 export const routeTree = rootRouteImport
