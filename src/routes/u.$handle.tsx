@@ -33,7 +33,7 @@ export const Route = createFileRoute("/u/$handle")({
       links: [{ rel: "canonical", href: url }],
     };
   },
-  errorComponent: ({ error }) => <div role="alert" className="p-6 text-sm text-loss">{error.message}</div>,
+  errorComponent: ({ error }) => <div role="alert" className="p-6 text-sm text-loss">{(error as Error).message}</div>,
   notFoundComponent: () => (
     <main className="mx-auto max-w-xl p-10 text-center text-sm text-muted-foreground">
       This profile is private or doesn't exist. <Link to="/leaderboard" search={{ sort: "roi" }} className="underline">See the leaderboard</Link>
