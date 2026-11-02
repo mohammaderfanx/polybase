@@ -11,6 +11,7 @@ const nav = [
   { to: "/venues", label: "Venues" },
   { to: "/settings/webhooks", label: "Automation" },
   { to: "/reports", label: "Reports" },
+  { to: "/tax", label: "Tax" },
   { to: "/profile", label: "Profile" },
 ] as const;
 
