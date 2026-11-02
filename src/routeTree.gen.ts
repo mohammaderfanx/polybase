@@ -17,6 +17,7 @@ import { Route as AuthenticatedArbitrageRouteImport } from './routes/_authentica
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedRiskRouteImport } from './routes/_authenticated/risk'
+import { Route as AuthenticatedTaxRouteImport } from './routes/_authenticated/tax'
 import { Route as AuthenticatedVenuesRouteImport } from './routes/_authenticated/venues'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
 import { Route as AuthenticatedSettingsWebhooksRouteImport } from './routes/_authenticated/settings.webhooks'
@@ -61,6 +62,11 @@ const AuthenticatedRiskRoute = AuthenticatedRiskRouteImport.update({
   path: '/risk',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTaxRoute = AuthenticatedTaxRouteImport.update({
+  id: '/tax',
+  path: '/tax',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedVenuesRoute = AuthenticatedVenuesRouteImport.update({
   id: '/venues',
   path: '/venues',
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/risk': typeof AuthenticatedRiskRoute
+  '/tax': typeof AuthenticatedTaxRoute
   '/venues': typeof AuthenticatedVenuesRoute
   '/u/$handle': typeof UHandleRoute
   '/settings/webhooks': typeof AuthenticatedSettingsWebhooksRoute
@@ -104,6 +111,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/risk': typeof AuthenticatedRiskRoute
+  '/tax': typeof AuthenticatedTaxRoute
   '/venues': typeof AuthenticatedVenuesRoute
   '/u/$handle': typeof UHandleRoute
   '/': typeof AuthenticatedIndexRoute
@@ -119,6 +127,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/risk': typeof AuthenticatedRiskRoute
+  '/_authenticated/tax': typeof AuthenticatedTaxRoute
   '/_authenticated/venues': typeof AuthenticatedVenuesRoute
   '/u/$handle': typeof UHandleRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -135,6 +144,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/reports'
     | '/risk'
+    | '/tax'
     | '/venues'
     | '/u/$handle'
     | '/settings/webhooks'
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/reports'
     | '/risk'
+    | '/tax'
     | '/venues'
     | '/u/$handle'
     | '/'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/reports'
     | '/_authenticated/risk'
+    | '/_authenticated/tax'
     | '/_authenticated/venues'
     | '/u/$handle'
     | '/_authenticated/'
@@ -234,6 +246,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRiskRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/tax': {
+      id: '/_authenticated/tax'
+      path: '/tax'
+      fullPath: '/tax'
+      preLoaderRoute: typeof AuthenticatedTaxRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/venues': {
       id: '/_authenticated/venues'
       path: '/venues'
@@ -270,6 +289,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedRiskRoute: typeof AuthenticatedRiskRoute
+  AuthenticatedTaxRoute: typeof AuthenticatedTaxRoute
   AuthenticatedVenuesRoute: typeof AuthenticatedVenuesRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedSettingsWebhooksRoute: typeof AuthenticatedSettingsWebhooksRoute
@@ -280,6 +300,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedRiskRoute: AuthenticatedRiskRoute,
+  AuthenticatedTaxRoute: AuthenticatedTaxRoute,
   AuthenticatedVenuesRoute: AuthenticatedVenuesRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedSettingsWebhooksRoute: AuthenticatedSettingsWebhooksRoute,
