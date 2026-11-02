@@ -253,6 +253,90 @@ export type Database = {
           },
         ]
       }
+      proof_keys: {
+        Row: {
+          created_at: string
+          id: number
+          private_jwk: Json
+          public_jwk: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          private_jwk: Json
+          public_jwk: Json
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          private_jwk?: Json
+          public_jwk?: Json
+        }
+        Relationships: []
+      }
+      public_portfolios: {
+        Row: {
+          created_at: string
+          display_name: string
+          handle: string
+          hide_absolute_values: boolean
+          holdings: Json
+          id: string
+          is_public: boolean
+          net_pnl_usd: number | null
+          proof_payload: string | null
+          proof_signature: string | null
+          sharpe_ratio: number | null
+          show_holdings: boolean
+          show_roi: boolean
+          total_roi_pct: number | null
+          total_volume_usd: number | null
+          user_id: string
+          verified_at: string | null
+          win_rate_pct: number | null
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string
+          handle: string
+          hide_absolute_values?: boolean
+          holdings?: Json
+          id?: string
+          is_public?: boolean
+          net_pnl_usd?: number | null
+          proof_payload?: string | null
+          proof_signature?: string | null
+          sharpe_ratio?: number | null
+          show_holdings?: boolean
+          show_roi?: boolean
+          total_roi_pct?: number | null
+          total_volume_usd?: number | null
+          user_id: string
+          verified_at?: string | null
+          win_rate_pct?: number | null
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          handle?: string
+          hide_absolute_values?: boolean
+          holdings?: Json
+          id?: string
+          is_public?: boolean
+          net_pnl_usd?: number | null
+          proof_payload?: string | null
+          proof_signature?: string | null
+          sharpe_ratio?: number | null
+          show_holdings?: boolean
+          show_roi?: boolean
+          total_roi_pct?: number | null
+          total_volume_usd?: number | null
+          user_id?: string
+          verified_at?: string | null
+          win_rate_pct?: number | null
+        }
+        Relationships: []
+      }
       user_fee_profiles: {
         Row: {
           custom_gas_offset_usd: number
@@ -437,6 +521,36 @@ export type Database = {
     }
     Functions: {
       check_cron_token: { Args: { t: string }; Returns: boolean }
+      get_leaderboard: {
+        Args: never
+        Returns: {
+          display_name: string
+          handle: string
+          sharpe_ratio: number
+          total_roi_pct: number
+          total_volume_usd: number
+          verified_at: string
+          win_rate_pct: number
+        }[]
+      }
+      get_public_profile: {
+        Args: { _handle: string }
+        Returns: {
+          display_name: string
+          handle: string
+          hide_absolute_values: boolean
+          holdings: Json
+          net_pnl_usd: number
+          proof_payload: string
+          proof_signature: string
+          public_jwk: Json
+          sharpe_ratio: number
+          total_roi_pct: number
+          total_volume_usd: number
+          verified_at: string
+          win_rate_pct: number
+        }[]
+      }
     }
     Enums: {
       execution_event_type:
