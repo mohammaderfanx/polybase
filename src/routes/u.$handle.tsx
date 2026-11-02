@@ -33,7 +33,7 @@ export const Route = createFileRoute("/u/$handle")({
       links: [{ rel: "canonical", href: url }],
     };
   },
-  errorComponent: ({ error }) => <div role="alert" className="p-6 text-sm text-loss">{error.message}</div>,
+  errorComponent: ({ error }) => <div role="alert" className="p-6 text-sm text-loss">{(error as Error).message}</div>,
   notFoundComponent: () => (
     <main className="mx-auto max-w-xl p-10 text-center text-sm text-muted-foreground">
       This profile is private or doesn't exist. <Link to="/leaderboard" search={{ sort: "roi" }} className="underline">See the leaderboard</Link>
@@ -69,7 +69,7 @@ function Profile() {
           )}
         </div>
         <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
-          <Stat l="Net ROI" v={roi == null ? "hidden" : `${roi >= 0 ? "+" : ""}${roi.toFixed(1)}%`} c={roi == null ? "" : roi >= 0 ? "text-gain" : "text-loss"} />
+          <Stat l="Net ROI" v={roi == null ? "—" : `${roi >= 0 ? "+" : ""}${roi.toFixed(1)}%`} c={roi == null ? "" : roi >= 0 ? "text-gain" : "text-loss"} />
           <Stat l="Win rate" v={card.win == null ? "—" : `${card.win.toFixed(0)}%`} />
           <Stat l="Sharpe" v={card.sharpe == null ? "—" : card.sharpe.toFixed(2)} />
           <Stat l="Volume" v={p.total_volume_usd == null ? "hidden" : `$${Math.round(Number(p.total_volume_usd)).toLocaleString()}`} />

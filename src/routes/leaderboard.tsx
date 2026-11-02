@@ -7,7 +7,7 @@ const lbQ = queryOptions({ queryKey: ["leaderboard"], queryFn: () => getLeaderbo
 type Sort = "roi" | "sharpe" | "volume";
 
 export const Route = createFileRoute("/leaderboard")({
-  validateSearch: (s: Record<string, unknown>): { sort: Sort } => ({ sort: s.sort === "sharpe" || s.sort === "volume" ? s.sort : "roi" }),
+  validateSearch: (s: Record<string, unknown>): { sort: Sort } => ({ sort: s["sort"] === "sharpe" || s["sort"] === "volume" ? s["sort"] : "roi" }),
   loader: ({ context }) => context.queryClient.ensureQueryData(lbQ),
   head: () => ({
     meta: [
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/leaderboard")({
     ],
     links: [{ rel: "canonical", href: "https://polybase.lovable.app/leaderboard" }],
   }),
-  errorComponent: ({ error }) => <div role="alert" className="p-6 text-sm text-loss">{error.message}</div>,
+  errorComponent: ({ error }) => <div role="alert" className="p-6 text-sm text-loss">{(error as Error).message}</div>,
   notFoundComponent: () => <div className="p-6 text-sm">Not found.</div>,
   component: Leaderboard,
 });
