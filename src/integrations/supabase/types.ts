@@ -58,6 +58,44 @@ export type Database = {
           },
         ]
       }
+      audit_telemetry_logs: {
+        Row: {
+          action_type: string
+          actor_id: string
+          id: string
+          ip_address: string
+          metadata: Json
+          organization_id: string
+          timestamp: string
+        }
+        Insert: {
+          action_type: string
+          actor_id: string
+          id?: string
+          ip_address?: string
+          metadata?: Json
+          organization_id: string
+          timestamp?: string
+        }
+        Update: {
+          action_type?: string
+          actor_id?: string
+          id?: string
+          ip_address?: string
+          metadata?: Json
+          organization_id?: string
+          timestamp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_telemetry_logs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       execution_logs: {
         Row: {
           created_at: string
@@ -181,6 +219,154 @@ export type Database = {
           kalshi_ticker?: string | null
           normalized_outcomes_map?: Json
           polymarket_condition_id?: string | null
+        }
+        Relationships: []
+      }
+      org_account_assignments: {
+        Row: {
+          added_by: string
+          assigned_to: string | null
+          created_at: string
+          id: string
+          label: string
+          organization_id: string
+          venue: Database["public"]["Enums"]["venue"]
+          venue_account_id: string
+        }
+        Insert: {
+          added_by: string
+          assigned_to?: string | null
+          created_at?: string
+          id?: string
+          label: string
+          organization_id: string
+          venue: Database["public"]["Enums"]["venue"]
+          venue_account_id: string
+        }
+        Update: {
+          added_by?: string
+          assigned_to?: string | null
+          created_at?: string
+          id?: string
+          label?: string
+          organization_id?: string
+          venue?: Database["public"]["Enums"]["venue"]
+          venue_account_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_account_assignments_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "org_account_assignments_venue_account_id_fkey"
+            columns: ["venue_account_id"]
+            isOneToOne: false
+            referencedRelation: "venue_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_invites: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          invited_by: string
+          organization_id: string
+          role: Database["public"]["Enums"]["org_role"]
+          venue_permissions: Json
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          invited_by: string
+          organization_id: string
+          role?: Database["public"]["Enums"]["org_role"]
+          venue_permissions?: Json
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          invited_by?: string
+          organization_id?: string
+          role?: Database["public"]["Enums"]["org_role"]
+          venue_permissions?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_invites_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_members: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          organization_id: string
+          role: Database["public"]["Enums"]["org_role"]
+          user_id: string
+          venue_permissions: Json
+        }
+        Insert: {
+          created_at?: string
+          email?: string
+          id?: string
+          organization_id: string
+          role?: Database["public"]["Enums"]["org_role"]
+          user_id: string
+          venue_permissions?: Json
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          organization_id?: string
+          role?: Database["public"]["Enums"]["org_role"]
+          user_id?: string
+          venue_permissions?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          plan_tier: Database["public"]["Enums"]["plan_tier"]
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          plan_tier?: Database["public"]["Enums"]["plan_tier"]
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          plan_tier?: Database["public"]["Enums"]["plan_tier"]
+          slug?: string
         }
         Relationships: []
       }
@@ -520,7 +706,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_org_invite: { Args: { _invite: string }; Returns: string }
       check_cron_token: { Args: { t: string }; Returns: boolean }
+      create_organization: {
+        Args: { _name: string; _slug: string }
+        Returns: string
+      }
       get_leaderboard: {
         Args: never
         Returns: {
@@ -551,6 +742,11 @@ export type Database = {
           win_rate_pct: number
         }[]
       }
+      is_org_admin: { Args: { _org: string; _user: string }; Returns: boolean }
+      org_role_of: {
+        Args: { _org: string; _user: string }
+        Returns: Database["public"]["Enums"]["org_role"]
+      }
     }
     Enums: {
       execution_event_type:
@@ -563,6 +759,8 @@ export type Database = {
         | "Macro / Economics"
         | "Tech / AI"
         | "Pop Culture"
+      org_role: "owner" | "admin" | "trader" | "view_only"
+      plan_tier: "pro" | "syndicate" | "enterprise"
       venue: "Polymarket" | "Kalshi"
       webhook_trigger:
         | "arb_found"
@@ -708,6 +906,8 @@ export const Constants = {
         "Tech / AI",
         "Pop Culture",
       ],
+      org_role: ["owner", "admin", "trader", "view_only"],
+      plan_tier: ["pro", "syndicate", "enterprise"],
       venue: ["Polymarket", "Kalshi"],
       webhook_trigger: [
         "arb_found",

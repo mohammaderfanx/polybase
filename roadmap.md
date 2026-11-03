@@ -1,5 +1,5 @@
-# Roadmap — Phase 4
-- [x] Webhook bridge: table, signing keys, HMAC payloads, dry-run, kill switch, dedupe + 3 retries, /settings/webhooks with tester and delivery log, 5-min schedule
-- [x] Leaderboard + public profiles (/leaderboard, /u/$handle, /profile), privacy toggles, ECDSA Proof-of-P&L, share image
-- [x] Tax-loss harvesting scanner with wash-sale flags
-- [x] Tests for arb/delta math (from Phase 3)
+# Roadmap — Phase 5
+- [x] Stage 1: Team workspaces, roles (owner/admin/trader/view-only), invites, venue permissions, shared account pool, append-only audit log (/settings/organization)
+- [ ] Stage 2: Copy-trading vaults, proportional sizing, batch payloads, pause-only kill switch (/vaults)
+- [ ] Stage 3: Institutional risk — VaR, Sortino, expected shortfall, concentration, correlation matrix, dual-admin overrides (/analytics/institutional)
+- [ ] Stage 4: Nightly reconciliation vs Polygon + Kalshi ledger, discrepancy log; in-app rate limiter
