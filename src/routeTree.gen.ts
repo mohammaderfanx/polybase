@@ -20,6 +20,7 @@ import { Route as AuthenticatedRiskRouteImport } from './routes/_authenticated/r
 import { Route as AuthenticatedTaxRouteImport } from './routes/_authenticated/tax'
 import { Route as AuthenticatedVenuesRouteImport } from './routes/_authenticated/venues'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
+import { Route as AuthenticatedSettingsOrganizationRouteImport } from './routes/_authenticated/settings.organization'
 import { Route as AuthenticatedSettingsWebhooksRouteImport } from './routes/_authenticated/settings.webhooks'
 import { Route as ApiPublicHooksRiskAlertsRouteImport } from './routes/api/public/hooks/risk-alerts'
 
@@ -77,6 +78,12 @@ const UHandleRoute = UHandleRouteImport.update({
   path: '/u/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedSettingsOrganizationRoute =
+  AuthenticatedSettingsOrganizationRouteImport.update({
+    id: '/settings/organization',
+    path: '/settings/organization',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsWebhooksRoute =
   AuthenticatedSettingsWebhooksRouteImport.update({
     id: '/settings/webhooks',
@@ -101,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/tax': typeof AuthenticatedTaxRoute
   '/venues': typeof AuthenticatedVenuesRoute
   '/u/$handle': typeof UHandleRoute
+  '/settings/organization': typeof AuthenticatedSettingsOrganizationRoute
   '/settings/webhooks': typeof AuthenticatedSettingsWebhooksRoute
   '/api/public/hooks/risk-alerts': typeof ApiPublicHooksRiskAlertsRoute
 }
@@ -115,6 +123,7 @@ export interface FileRoutesByTo {
   '/venues': typeof AuthenticatedVenuesRoute
   '/u/$handle': typeof UHandleRoute
   '/': typeof AuthenticatedIndexRoute
+  '/settings/organization': typeof AuthenticatedSettingsOrganizationRoute
   '/settings/webhooks': typeof AuthenticatedSettingsWebhooksRoute
   '/api/public/hooks/risk-alerts': typeof ApiPublicHooksRiskAlertsRoute
 }
@@ -131,6 +140,7 @@ export interface FileRoutesById {
   '/_authenticated/venues': typeof AuthenticatedVenuesRoute
   '/u/$handle': typeof UHandleRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/settings/organization': typeof AuthenticatedSettingsOrganizationRoute
   '/_authenticated/settings/webhooks': typeof AuthenticatedSettingsWebhooksRoute
   '/api/public/hooks/risk-alerts': typeof ApiPublicHooksRiskAlertsRoute
 }
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/tax'
     | '/venues'
     | '/u/$handle'
+    | '/settings/organization'
     | '/settings/webhooks'
     | '/api/public/hooks/risk-alerts'
   fileRoutesByTo: FileRoutesByTo
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/venues'
     | '/u/$handle'
     | '/'
+    | '/settings/organization'
     | '/settings/webhooks'
     | '/api/public/hooks/risk-alerts'
   id:
@@ -176,6 +188,7 @@ export interface FileRouteTypes {
     | '/_authenticated/venues'
     | '/u/$handle'
     | '/_authenticated/'
+    | '/_authenticated/settings/organization'
     | '/_authenticated/settings/webhooks'
     | '/api/public/hooks/risk-alerts'
   fileRoutesById: FileRoutesById
@@ -267,6 +280,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/settings/organization': {
+      id: '/_authenticated/settings/organization'
+      path: '/settings/organization'
+      fullPath: '/settings/organization'
+      preLoaderRoute: typeof AuthenticatedSettingsOrganizationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings/webhooks': {
       id: '/_authenticated/settings/webhooks'
       path: '/settings/webhooks'
@@ -292,6 +312,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTaxRoute: typeof AuthenticatedTaxRoute
   AuthenticatedVenuesRoute: typeof AuthenticatedVenuesRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedSettingsOrganizationRoute: typeof AuthenticatedSettingsOrganizationRoute
   AuthenticatedSettingsWebhooksRoute: typeof AuthenticatedSettingsWebhooksRoute
 }
 
@@ -303,6 +324,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTaxRoute: AuthenticatedTaxRoute,
   AuthenticatedVenuesRoute: AuthenticatedVenuesRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedSettingsOrganizationRoute:
+    AuthenticatedSettingsOrganizationRoute,
   AuthenticatedSettingsWebhooksRoute: AuthenticatedSettingsWebhooksRoute,
 }
 
