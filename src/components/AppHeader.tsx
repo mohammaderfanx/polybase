@@ -13,6 +13,7 @@ const nav = [
   { to: "/reports", label: "Reports" },
   { to: "/tax", label: "Tax" },
   { to: "/profile", label: "Profile" },
+  { to: "/settings/organization", label: "Team" },
 ] as const;
 
 export function AppHeader() {
