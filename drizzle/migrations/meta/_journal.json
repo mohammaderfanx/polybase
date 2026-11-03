@@ -8,6 +8,13 @@
       "when": 1793612792565,
       "tag": "0000_public_portfolios_proof",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793694253214,
+      "tag": "0001_organizations_teams",
+      "breakpoints": true
     }
   ]
 }
