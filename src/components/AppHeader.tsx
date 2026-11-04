@@ -10,6 +10,7 @@ const nav = [
   { to: "/risk", label: "Risk" },
   { to: "/venues", label: "Venues" },
   { to: "/settings/webhooks", label: "Automation" },
+  { to: "/vaults", label: "Vaults" },
   { to: "/reports", label: "Reports" },
   { to: "/tax", label: "Tax" },
   { to: "/profile", label: "Profile" },

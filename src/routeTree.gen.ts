@@ -18,6 +18,7 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedRiskRouteImport } from './routes/_authenticated/risk'
 import { Route as AuthenticatedTaxRouteImport } from './routes/_authenticated/tax'
+import { Route as AuthenticatedVaultsRouteImport } from './routes/_authenticated/vaults'
 import { Route as AuthenticatedVenuesRouteImport } from './routes/_authenticated/venues'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
 import { Route as AuthenticatedSettingsOrganizationRouteImport } from './routes/_authenticated/settings.organization'
@@ -68,6 +69,11 @@ const AuthenticatedTaxRoute = AuthenticatedTaxRouteImport.update({
   path: '/tax',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedVaultsRoute = AuthenticatedVaultsRouteImport.update({
+  id: '/vaults',
+  path: '/vaults',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedVenuesRoute = AuthenticatedVenuesRouteImport.update({
   id: '/venues',
   path: '/venues',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/reports': typeof AuthenticatedReportsRoute
   '/risk': typeof AuthenticatedRiskRoute
   '/tax': typeof AuthenticatedTaxRoute
+  '/vaults': typeof AuthenticatedVaultsRoute
   '/venues': typeof AuthenticatedVenuesRoute
   '/u/$handle': typeof UHandleRoute
   '/settings/organization': typeof AuthenticatedSettingsOrganizationRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/reports': typeof AuthenticatedReportsRoute
   '/risk': typeof AuthenticatedRiskRoute
   '/tax': typeof AuthenticatedTaxRoute
+  '/vaults': typeof AuthenticatedVaultsRoute
   '/venues': typeof AuthenticatedVenuesRoute
   '/u/$handle': typeof UHandleRoute
   '/': typeof AuthenticatedIndexRoute
@@ -137,6 +145,7 @@ export interface FileRoutesById {
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/risk': typeof AuthenticatedRiskRoute
   '/_authenticated/tax': typeof AuthenticatedTaxRoute
+  '/_authenticated/vaults': typeof AuthenticatedVaultsRoute
   '/_authenticated/venues': typeof AuthenticatedVenuesRoute
   '/u/$handle': typeof UHandleRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -155,6 +164,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/risk'
     | '/tax'
+    | '/vaults'
     | '/venues'
     | '/u/$handle'
     | '/settings/organization'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/risk'
     | '/tax'
+    | '/vaults'
     | '/venues'
     | '/u/$handle'
     | '/'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/_authenticated/reports'
     | '/_authenticated/risk'
     | '/_authenticated/tax'
+    | '/_authenticated/vaults'
     | '/_authenticated/venues'
     | '/u/$handle'
     | '/_authenticated/'
@@ -266,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTaxRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/vaults': {
+      id: '/_authenticated/vaults'
+      path: '/vaults'
+      fullPath: '/vaults'
+      preLoaderRoute: typeof AuthenticatedVaultsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/venues': {
       id: '/_authenticated/venues'
       path: '/venues'
@@ -310,6 +329,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedRiskRoute: typeof AuthenticatedRiskRoute
   AuthenticatedTaxRoute: typeof AuthenticatedTaxRoute
+  AuthenticatedVaultsRoute: typeof AuthenticatedVaultsRoute
   AuthenticatedVenuesRoute: typeof AuthenticatedVenuesRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedSettingsOrganizationRoute: typeof AuthenticatedSettingsOrganizationRoute
@@ -322,6 +342,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedRiskRoute: AuthenticatedRiskRoute,
   AuthenticatedTaxRoute: AuthenticatedTaxRoute,
+  AuthenticatedVaultsRoute: AuthenticatedVaultsRoute,
   AuthenticatedVenuesRoute: AuthenticatedVenuesRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedSettingsOrganizationRoute:

@@ -11,6 +11,8 @@ export const syncPortfolio = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
+    const { data: thr } = await supabase.from("user_risk_thresholds").select("automation_killed").maybeSingle();
+    if (thr?.automation_killed) throw new Error("Emergency kill switch is on — syncing is paused. Turn it off on the Vaults or Automation page.");
     const { fetchPolymarket, fetchKalshi } = await import("./venues.server");
     const { netPnlMap } = await import("./fees");
 
