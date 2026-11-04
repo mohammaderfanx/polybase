@@ -13,7 +13,7 @@ import { VenueBadge } from "@/components/AppHeader";
 type Role = Database["public"]["Enums"]["org_role"];
 type Perms = { Polymarket: boolean; Kalshi: boolean };
 const ROLES: Role[] = ["owner", "admin", "trader", "view_only"];
-const roleLabel = (r: string) => (r === "view_only" ? "View-only" : r[0].toUpperCase() + r.slice(1));
+const roleLabel = (r: string) => (r === "view_only" ? "View-only" : r.charAt(0).toUpperCase() + r.slice(1));
 
 export const Route = createFileRoute("/_authenticated/settings/organization")({
   head: () => ({
@@ -47,7 +47,7 @@ const orgDataQ = (org: string) => queryOptions({
       supabase.from("org_account_assignments").select("*").eq("organization_id", org).order("created_at"),
     ]);
     const err = m.error ?? i.error ?? p.error; if (err) throw err;
-    return { members: m.data, invites: i.data, pool: p.data };
+    return { members: m.data ?? [], invites: i.data ?? [], pool: p.data ?? [] };
   },
 });
 const auditQ = (org: string) => queryOptions({
@@ -68,15 +68,15 @@ function OrgPage() {
 
   const create = async () => {
     const slug = form.slug.trim().toLowerCase();
-    if (!form.name.trim() || !/^[a-z0-9-]{3,40}$/.test(slug)) return toast.error("Name required; slug 3–40 chars of a–z, 0–9, -");
+    if (!form.name.trim() || !/^[a-z0-9-]{3,40}$/.test(slug)) { toast.error("Name required; slug 3–40 chars of a–z, 0–9, -"); return; }
     const { data, error } = await supabase.rpc("create_organization", { _name: form.name.trim(), _slug: slug });
-    if (error) return toast.error(error.message.includes("duplicate") ? "That slug is taken" : error.message);
+    if (error) { toast.error(error.message.includes("duplicate") ? "That slug is taken" : error.message); return; }
     await audit({ data: { organization_id: data, action_type: "WORKSPACE_CREATED", metadata: { name: form.name } } });
     setForm({ name: "", slug: "" }); setSel(data); qc.invalidateQueries({ queryKey: ["orgs"] });
   };
   const accept = async (id: string) => {
     const { data, error } = await supabase.rpc("accept_org_invite", { _invite: id });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     await audit({ data: { organization_id: data, action_type: "INVITE_ACCEPTED", metadata: {} } });
     setSel(data); qc.invalidateQueries({ queryKey: ["orgs"] }); qc.invalidateQueries({ queryKey: ["my-invites"] });
   };
@@ -138,27 +138,27 @@ function Workspace({ orgId, orgName, meId }: { orgId: string; orgName: string; m
 
   const invite = async () => {
     const email = inv.email.trim().toLowerCase();
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return toast.error("Enter a valid email");
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { toast.error("Enter a valid email"); return; }
     const { error } = await supabase.from("organization_invites").insert({ organization_id: orgId, email, role: inv.role, invited_by: meId });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setInv({ ...inv, email: "" }); toast.success("Invite created — they'll see it here after signing in with that email");
     log("MEMBER_INVITED", { email, role: inv.role });
   };
   const setRole = async (id: string, email: string, role: Role) => {
     const { error } = await supabase.from("organization_members").update({ role }).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     log("ROLE_CHANGED", { email, role });
   };
   const setPerm = async (id: string, email: string, perms: Perms, venue: keyof Perms) => {
     const next = { ...perms, [venue]: !perms[venue] };
     const { error } = await supabase.from("organization_members").update({ venue_permissions: next }).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     log("VENUE_PERMISSION_CHANGED", { email, venue, allowed: next[venue] });
   };
   const removeMember = async (id: string, email: string) => {
     if (!confirm(`Remove ${email}?`)) return;
     const { error } = await supabase.from("organization_members").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     log("MEMBER_REMOVED", { email });
   };
   const cancelInvite = async (id: string, email: string) => {
@@ -166,12 +166,12 @@ function Workspace({ orgId, orgName, meId }: { orgId: string; orgName: string; m
   };
   const share = async (acc: (typeof myAccounts)[number]) => {
     const { error } = await supabase.from("org_account_assignments").insert({ organization_id: orgId, venue_account_id: acc.id, venue: acc.venue, label: acc.identifier, added_by: meId });
-    if (error) return toast.error(error.message.includes("duplicate") ? "Already in the pool" : error.message);
+    if (error) { toast.error(error.message.includes("duplicate") ? "Already in the pool" : error.message); return; }
     log("ACCOUNT_SHARED", { venue: acc.venue, account: acc.identifier });
   };
   const assign = async (id: string, label: string, to: string) => {
     const { error } = await supabase.from("org_account_assignments").update({ assigned_to: to || null }).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     log("ACCOUNT_ASSIGNED", { account: label, to: to ? emailOf(to) : null });
   };
   const unshare = async (id: string, label: string) => {
@@ -269,7 +269,7 @@ function Workspace({ orgId, orgName, meId }: { orgId: string; orgName: string; m
             return (
               <li key={l.id} className="px-3 py-1.5">
                 <div className="flex justify-between"><span className="text-primary">{l.action_type}</span><span className="text-muted-foreground">{new Date(l.timestamp).toLocaleString()}</span></div>
-                <div className="text-muted-foreground">{String(md.actor_email ?? emailOf(l.actor_id))}{l.ip_address && ` · ${l.ip_address}`}</div>
+                <div className="text-muted-foreground">{String(md["actor_email"] ?? emailOf(l.actor_id))}{l.ip_address && ` · ${l.ip_address}`}</div>
                 <div className="truncate">{Object.entries(md).filter(([k]) => k !== "actor_email").map(([k, v]) => `${k}=${v}`).join("  ")}</div>
               </li>
             );
