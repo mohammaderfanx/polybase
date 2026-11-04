@@ -96,6 +96,60 @@ export type Database = {
           },
         ]
       }
+      copy_trading_vaults: {
+        Row: {
+          auto_hedge_enabled: boolean
+          created_at: string
+          id: string
+          is_active: boolean
+          lead_account_id: string | null
+          lead_trader_id: string
+          max_slippage_tolerance_pct: number
+          name: string
+          organization_id: string | null
+          target_allocation_usd: number
+        }
+        Insert: {
+          auto_hedge_enabled?: boolean
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          lead_account_id?: string | null
+          lead_trader_id: string
+          max_slippage_tolerance_pct?: number
+          name: string
+          organization_id?: string | null
+          target_allocation_usd?: number
+        }
+        Update: {
+          auto_hedge_enabled?: boolean
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          lead_account_id?: string | null
+          lead_trader_id?: string
+          max_slippage_tolerance_pct?: number
+          name?: string
+          organization_id?: string | null
+          target_allocation_usd?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copy_trading_vaults_lead_account_id_fkey"
+            columns: ["lead_account_id"]
+            isOneToOne: false
+            referencedRelation: "venue_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "copy_trading_vaults_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       execution_logs: {
         Row: {
           created_at: string
@@ -582,6 +636,63 @@ export type Database = {
           webhook_url?: string | null
         }
         Relationships: []
+      }
+      vault_followers: {
+        Row: {
+          available_margin_usd: number
+          created_at: string
+          fee_tier: string
+          id: string
+          is_paused: boolean
+          label: string
+          max_contracts_per_market: number
+          user_id: string
+          vault_id: string
+          venue: Database["public"]["Enums"]["venue"]
+          venue_account_id: string | null
+        }
+        Insert: {
+          available_margin_usd?: number
+          created_at?: string
+          fee_tier?: string
+          id?: string
+          is_paused?: boolean
+          label: string
+          max_contracts_per_market?: number
+          user_id: string
+          vault_id: string
+          venue: Database["public"]["Enums"]["venue"]
+          venue_account_id?: string | null
+        }
+        Update: {
+          available_margin_usd?: number
+          created_at?: string
+          fee_tier?: string
+          id?: string
+          is_paused?: boolean
+          label?: string
+          max_contracts_per_market?: number
+          user_id?: string
+          vault_id?: string
+          venue?: Database["public"]["Enums"]["venue"]
+          venue_account_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vault_followers_vault_id_fkey"
+            columns: ["vault_id"]
+            isOneToOne: false
+            referencedRelation: "copy_trading_vaults"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vault_followers_venue_account_id_fkey"
+            columns: ["venue_account_id"]
+            isOneToOne: false
+            referencedRelation: "venue_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       venue_accounts: {
         Row: {

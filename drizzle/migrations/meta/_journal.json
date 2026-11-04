@@ -15,6 +15,13 @@
       "when": 1793694253214,
       "tag": "0001_organizations_teams",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793790414741,
+      "tag": "0002_copy_trading_vaults",
+      "breakpoints": true
     }
   ]
 }
