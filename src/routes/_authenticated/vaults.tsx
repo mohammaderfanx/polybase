@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Copy, OctagonX, Pause, Play, Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { accountsQ, positionsQ, thresholdsQ } from "@/lib/queries";
 import { batchPayload, planFollower, slippagePct, type Follower, type LeadPos } from "@/lib/copy";
 import { logAudit } from "@/lib/org.functions";
@@ -141,9 +142,8 @@ function VaultsPage() {
   );
 }
 
-type Vault = NonNullable<ReturnType<typeof useVaultType>>;
-function useVaultType() { return null as unknown as Awaited<ReturnType<typeof vaultsQ.queryFn>>["vaults"][number]; }
-type FRow = Awaited<ReturnType<typeof vaultsQ.queryFn>>["followers"][number];
+type Vault = Database["public"]["Tables"]["copy_trading_vaults"]["Row"];
+type FRow = Database["public"]["Tables"]["vault_followers"]["Row"];
 
 function VaultView({ vault, followers, accounts, positions, killed, onChange, log }: {
   vault: Vault; followers: FRow[]; accounts: { id: string; venue: "Polymarket" | "Kalshi"; identifier: string }[];
