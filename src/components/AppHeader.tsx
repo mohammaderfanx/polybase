@@ -8,6 +8,7 @@ const nav = [
   { to: "/", label: "Command" },
   { to: "/arbitrage", label: "Arbitrage" },
   { to: "/risk", label: "Risk" },
+  { to: "/analytics/institutional", label: "Analytics" },
   { to: "/venues", label: "Venues" },
   { to: "/settings/webhooks", label: "Automation" },
   { to: "/vaults", label: "Vaults" },
@@ -28,12 +29,12 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-20 border-b bg-background/95 backdrop-blur">
       <FeedManager />
-      <div className="mx-auto flex h-11 max-w-[1600px] items-center gap-6 px-4">
+      <div className="mx-auto flex min-h-11 max-w-[1600px] flex-wrap items-center gap-3 px-4 py-2">
         <Link to="/" className="flex items-center gap-2 font-mono text-sm font-bold tracking-tight">
           <span className="grid h-5 w-5 place-items-center rounded-sm bg-primary text-[11px] text-primary-foreground">P</span>
           POLYBASE
         </Link>
-        <nav className="flex gap-1">
+        <nav className="flex min-w-0 flex-1 flex-wrap gap-1">
           {nav.map((n) => (
             <Link key={n.to} to={n.to} activeOptions={{ exact: true }}
               className="rounded-sm px-2.5 py-1 font-mono text-xs text-muted-foreground hover:text-foreground data-[status=active]:bg-accent data-[status=active]:text-foreground">

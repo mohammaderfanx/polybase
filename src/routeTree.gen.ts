@@ -21,6 +21,7 @@ import { Route as AuthenticatedTaxRouteImport } from './routes/_authenticated/ta
 import { Route as AuthenticatedVaultsRouteImport } from './routes/_authenticated/vaults'
 import { Route as AuthenticatedVenuesRouteImport } from './routes/_authenticated/venues'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
+import { Route as AuthenticatedAnalyticsInstitutionalRouteImport } from './routes/_authenticated/analytics.institutional'
 import { Route as AuthenticatedSettingsOrganizationRouteImport } from './routes/_authenticated/settings.organization'
 import { Route as AuthenticatedSettingsWebhooksRouteImport } from './routes/_authenticated/settings.webhooks'
 import { Route as ApiPublicHooksRiskAlertsRouteImport } from './routes/api/public/hooks/risk-alerts'
@@ -84,6 +85,12 @@ const UHandleRoute = UHandleRouteImport.update({
   path: '/u/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAnalyticsInstitutionalRoute =
+  AuthenticatedAnalyticsInstitutionalRouteImport.update({
+    id: '/analytics/institutional',
+    path: '/analytics/institutional',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsOrganizationRoute =
   AuthenticatedSettingsOrganizationRouteImport.update({
     id: '/settings/organization',
@@ -115,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/vaults': typeof AuthenticatedVaultsRoute
   '/venues': typeof AuthenticatedVenuesRoute
   '/u/$handle': typeof UHandleRoute
+  '/analytics/institutional': typeof AuthenticatedAnalyticsInstitutionalRoute
   '/settings/organization': typeof AuthenticatedSettingsOrganizationRoute
   '/settings/webhooks': typeof AuthenticatedSettingsWebhooksRoute
   '/api/public/hooks/risk-alerts': typeof ApiPublicHooksRiskAlertsRoute
@@ -131,6 +139,7 @@ export interface FileRoutesByTo {
   '/venues': typeof AuthenticatedVenuesRoute
   '/u/$handle': typeof UHandleRoute
   '/': typeof AuthenticatedIndexRoute
+  '/analytics/institutional': typeof AuthenticatedAnalyticsInstitutionalRoute
   '/settings/organization': typeof AuthenticatedSettingsOrganizationRoute
   '/settings/webhooks': typeof AuthenticatedSettingsWebhooksRoute
   '/api/public/hooks/risk-alerts': typeof ApiPublicHooksRiskAlertsRoute
@@ -149,6 +158,7 @@ export interface FileRoutesById {
   '/_authenticated/venues': typeof AuthenticatedVenuesRoute
   '/u/$handle': typeof UHandleRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/analytics/institutional': typeof AuthenticatedAnalyticsInstitutionalRoute
   '/_authenticated/settings/organization': typeof AuthenticatedSettingsOrganizationRoute
   '/_authenticated/settings/webhooks': typeof AuthenticatedSettingsWebhooksRoute
   '/api/public/hooks/risk-alerts': typeof ApiPublicHooksRiskAlertsRoute
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/vaults'
     | '/venues'
     | '/u/$handle'
+    | '/analytics/institutional'
     | '/settings/organization'
     | '/settings/webhooks'
     | '/api/public/hooks/risk-alerts'
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/venues'
     | '/u/$handle'
     | '/'
+    | '/analytics/institutional'
     | '/settings/organization'
     | '/settings/webhooks'
     | '/api/public/hooks/risk-alerts'
@@ -200,6 +212,7 @@ export interface FileRouteTypes {
     | '/_authenticated/venues'
     | '/u/$handle'
     | '/_authenticated/'
+    | '/_authenticated/analytics/institutional'
     | '/_authenticated/settings/organization'
     | '/_authenticated/settings/webhooks'
     | '/api/public/hooks/risk-alerts'
@@ -299,6 +312,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/analytics/institutional': {
+      id: '/_authenticated/analytics/institutional'
+      path: '/analytics/institutional'
+      fullPath: '/analytics/institutional'
+      preLoaderRoute: typeof AuthenticatedAnalyticsInstitutionalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings/organization': {
       id: '/_authenticated/settings/organization'
       path: '/settings/organization'
@@ -332,6 +352,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVaultsRoute: typeof AuthenticatedVaultsRoute
   AuthenticatedVenuesRoute: typeof AuthenticatedVenuesRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedAnalyticsInstitutionalRoute: typeof AuthenticatedAnalyticsInstitutionalRoute
   AuthenticatedSettingsOrganizationRoute: typeof AuthenticatedSettingsOrganizationRoute
   AuthenticatedSettingsWebhooksRoute: typeof AuthenticatedSettingsWebhooksRoute
 }
@@ -345,6 +366,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVaultsRoute: AuthenticatedVaultsRoute,
   AuthenticatedVenuesRoute: AuthenticatedVenuesRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedAnalyticsInstitutionalRoute:
+    AuthenticatedAnalyticsInstitutionalRoute,
   AuthenticatedSettingsOrganizationRoute:
     AuthenticatedSettingsOrganizationRoute,
   AuthenticatedSettingsWebhooksRoute: AuthenticatedSettingsWebhooksRoute,

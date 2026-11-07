@@ -400,6 +400,38 @@ export type Database = {
           },
         ]
       }
+      organization_risk_limits: {
+        Row: {
+          max_concentration_pct: number
+          max_drawdown_pct: number
+          organization_id: string
+          revision: number
+          updated_at: string
+        }
+        Insert: {
+          max_concentration_pct?: number
+          max_drawdown_pct?: number
+          organization_id: string
+          revision?: number
+          updated_at?: string
+        }
+        Update: {
+          max_concentration_pct?: number
+          max_drawdown_pct?: number
+          organization_id?: string
+          revision?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_risk_limits_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organizations: {
         Row: {
           created_at: string
@@ -576,6 +608,94 @@ export type Database = {
           win_rate_pct?: number | null
         }
         Relationships: []
+      }
+      risk_limit_proposals: {
+        Row: {
+          approved_by: string | null
+          base_revision: number
+          created_at: string
+          decided_at: string | null
+          id: string
+          max_concentration_pct: number
+          max_drawdown_pct: number
+          organization_id: string
+          proposed_by: string
+          reason: string
+          status: string
+        }
+        Insert: {
+          approved_by?: string | null
+          base_revision: number
+          created_at?: string
+          decided_at?: string | null
+          id?: string
+          max_concentration_pct: number
+          max_drawdown_pct: number
+          organization_id: string
+          proposed_by: string
+          reason: string
+          status?: string
+        }
+        Update: {
+          approved_by?: string | null
+          base_revision?: number
+          created_at?: string
+          decided_at?: string | null
+          id?: string
+          max_concentration_pct?: number
+          max_drawdown_pct?: number
+          organization_id?: string
+          proposed_by?: string
+          reason?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "risk_limit_proposals_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      risk_observations: {
+        Row: {
+          captured_at: string
+          day: string
+          equity: number
+          id: string
+          marks: Json
+          organization_id: string | null
+          user_id: string
+        }
+        Insert: {
+          captured_at?: string
+          day?: string
+          equity: number
+          id?: string
+          marks?: Json
+          organization_id?: string | null
+          user_id: string
+        }
+        Update: {
+          captured_at?: string
+          day?: string
+          equity?: number
+          id?: string
+          marks?: Json
+          organization_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "risk_observations_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_fee_profiles: {
         Row: {
@@ -818,9 +938,15 @@ export type Database = {
     }
     Functions: {
       accept_org_invite: { Args: { _invite: string }; Returns: string }
+      can_read_team_risk: { Args: { _org: string }; Returns: boolean }
+      capture_risk_observation: { Args: { _org?: string }; Returns: undefined }
       check_cron_token: { Args: { t: string }; Returns: boolean }
       create_organization: {
         Args: { _name: string; _slug: string }
+        Returns: string
+      }
+      decide_risk_limits: {
+        Args: { _decision: string; _proposal: string }
         Returns: string
       }
       get_leaderboard: {
@@ -853,10 +979,20 @@ export type Database = {
           win_rate_pct: number
         }[]
       }
+      institutional_data: { Args: { _org?: string }; Returns: Json }
       is_org_admin: { Args: { _org: string; _user: string }; Returns: boolean }
       org_role_of: {
         Args: { _org: string; _user: string }
         Returns: Database["public"]["Enums"]["org_role"]
+      }
+      propose_risk_limits: {
+        Args: {
+          _concentration: number
+          _drawdown: number
+          _org: string
+          _reason: string
+        }
+        Returns: string
       }
     }
     Enums: {

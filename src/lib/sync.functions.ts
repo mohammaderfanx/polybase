@@ -74,5 +74,17 @@ export const syncPortfolio = createServerFn({ method: "POST" })
       });
     }
     await supabase.from("execution_logs").insert({ user_id: userId, event_type: "sync", payload: { results, equity } as never });
+    // Capture marks only after a fully successful sync; never fabricate history on page load.
+    if (results.length && results.every((r) => r.ok)) {
+      const { error } = await supabase.rpc("capture_risk_observation", {});
+      if (error) console.error("Personal risk observation failed", error.code);
+      const { data: memberships } = await supabase.from("organization_members").select("organization_id,venue_permissions").eq("user_id", userId);
+      for (const member of memberships ?? []) {
+        const perms = member.venue_permissions as Record<string, boolean>;
+        if (!perms["Polymarket"] || !perms["Kalshi"]) continue;
+        const { error: captureError } = await supabase.rpc("capture_risk_observation", { _org: member.organization_id });
+        if (captureError) console.error("Team risk observation unavailable", captureError.code);
+      }
+    }
     return { results };
   });
