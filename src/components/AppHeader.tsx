@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LogOut, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { FeedManager, FeedStatus } from "@/components/FeedManager";
+import { Button } from "@/components/ui/button";
 
 const nav = [
   { to: "/", label: "Command" },
@@ -34,7 +35,7 @@ export function AppHeader() {
           <span className="grid h-5 w-5 place-items-center rounded-sm bg-primary text-[11px] text-primary-foreground">P</span>
           POLYBASE
         </Link>
-        <nav className="flex min-w-0 flex-1 flex-wrap gap-1">
+        <nav className="order-3 flex w-full min-w-0 flex-wrap gap-1 lg:order-none lg:w-auto lg:flex-1">
           {nav.map((n) => (
             <Link key={n.to} to={n.to} activeOptions={{ exact: true }}
               className="rounded-sm px-2.5 py-1 font-mono text-xs text-muted-foreground hover:text-foreground data-[status=active]:bg-accent data-[status=active]:text-foreground">
@@ -50,7 +51,7 @@ export function AppHeader() {
           <Link to="/venues" className="flex items-center gap-1 rounded-sm border px-2 py-1 font-mono text-[11px] hover:bg-accent">
             <Plus className="h-3 w-3" /> Add Venue
           </Link>
-          <button onClick={signOut} aria-label="Sign out" className="text-muted-foreground hover:text-foreground"><LogOut className="h-3.5 w-3.5" /></button>
+          <Button variant="ghost" size="icon" onClick={signOut} aria-label="Sign out" title="Sign out" className="size-6 text-muted-foreground"><LogOut /></Button>
         </div>
       </div>
     </header>

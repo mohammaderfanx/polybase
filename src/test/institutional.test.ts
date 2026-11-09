@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { allocation, correlations, dailyReturns, historicalRisk } from "@/lib/institutional";
 import type { FeeProfile, Position } from "@/lib/portfolio";
+import { readFileSync } from "node:fs";
 
 const points = (returns: number[]) => {
   let equity = 1000;
@@ -34,5 +35,13 @@ describe("institutional risk", () => {
     const marks = [0.5, 0.51, 0.49, 0.53, 0.5, 0.52].flatMap((p, i) => [{ day: `2026-01-0${i + 1}`, event_key: "a", yes_price: p }, { day: `2026-01-0${i + 1}`, event_key: "b", yes_price: 1 - p }]);
     expect(correlations(marks, ["a", "b"])[0]?.[0]).toBeCloseTo(1);
     expect(correlations(marks, ["a", "b"])[0]?.[1]).toBeCloseTo(-1);
+  });
+  it("enforces distinct current admins and locks revision checks for risk approval", () => {
+    const sql = readFileSync("drizzle/migrations/0003_institutional_risk_governance.sql", "utf8");
+    expect(sql).toContain("CHECK(approved_by IS NULL OR approved_by<>proposed_by)");
+    expect(sql).toContain("IF p.proposed_by=auth.uid() THEN RAISE EXCEPTION 'A different admin must sign off'");
+    expect(sql).toContain("IF NOT public.is_org_admin(p.organization_id,p.proposed_by)");
+    expect(sql).toContain("WHERE organization_id=p.organization_id FOR UPDATE");
+    expect(sql).toContain("IF r<>p.base_revision THEN s:='stale'");
   });
 });
