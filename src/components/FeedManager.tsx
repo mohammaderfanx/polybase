@@ -13,12 +13,14 @@ export function FeedManager() {
   const tokens = useRef<Record<string, string>>({});
 
   useEffect(() => {
-    let alive = true, stopWs = () => {}, t = 0;
+    let alive = true, stopWs = () => {}, t = 0, fails = 0, empty = false;
     const st = useMarket.getState();
     const tick = async (bootstrap = false) => {
       try {
         const { books } = await fetchBooks({ data: { poly: bootstrap || polyDown.current, kalshi: true, tokens: tokens.current } });
         if (!alive) return;
+        fails = 0;
+        empty = books.length === 0;
         let anyK = false;
         for (const b of books) {
           if (b.polyToken) tokens.current[b.id] = b.polyToken;
@@ -32,9 +34,16 @@ export function FeedManager() {
           if (!Object.keys(map).length) st.setStatus("Polymarket", "idle");
         }
       } catch {
+        fails++;
         if (alive) st.setStatus("Kalshi", "error");
       }
-      if (alive) t = window.setTimeout(() => tick(), POLL_MS);
+      if (!alive) return;
+      // Back off on errors / no events; pause while the tab is hidden.
+      const delay = empty ? 60_000 : Math.min(60_000, POLL_MS * 2 ** fails);
+      t = window.setTimeout(function next() {
+        if (document.hidden) { t = window.setTimeout(next, 2000); return; }
+        tick();
+      }, delay);
     };
     tick(true);
     return () => { alive = false; window.clearTimeout(t); stopWs(); };

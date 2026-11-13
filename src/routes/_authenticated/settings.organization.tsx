@@ -53,7 +53,7 @@ const orgDataQ = (org: string) => queryOptions({
 const auditQ = (org: string) => queryOptions({
   queryKey: ["audit", org],
   queryFn: async () => { const { data, error } = await supabase.from("audit_telemetry_logs").select("*").eq("organization_id", org).order("timestamp", { ascending: false }).limit(200); if (error) throw error; return data; },
-  refetchInterval: 4000,
+  refetchInterval: 30_000,
 });
 
 function OrgPage() {

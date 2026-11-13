@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
+  useRouterState,
 } from "@tanstack/react-router";
 import { Toaster } from "sonner";
 import {
@@ -135,8 +136,16 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      <NavProgress />
       <Outlet />
       <Toaster theme="dark" position="bottom-right" />
     </QueryClientProvider>
+  );
+}
+
+function NavProgress() {
+  const loading = useRouterState({ select: (s) => s.status === "pending" });
+  return (
+    <div aria-hidden className={`pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5 origin-left bg-primary transition-transform duration-500 ${loading ? "scale-x-75" : "scale-x-0 opacity-0"}`} />
   );
 }

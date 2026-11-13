@@ -2,10 +2,11 @@
 import { constants, sign } from "node:crypto";
 import { type Book, sortBook } from "./orderbook";
 
+const timed = (url: string, init?: RequestInit) => fetch(url, { ...init, signal: AbortSignal.timeout(4000) });
 const n = (v: unknown) => (v == null || v === "" ? 0 : Number(v));
 
 export async function polyYesToken(conditionId: string): Promise<string | null> {
-  const r = await fetch(`https://clob.polymarket.com/markets/${encodeURIComponent(conditionId)}`);
+  const r = await timed(`https://clob.polymarket.com/markets/${encodeURIComponent(conditionId)}`);
   if (!r.ok) return null;
   const m = (await r.json()) as any;
   const tokens = (m?.tokens ?? []) as any[];
@@ -13,7 +14,7 @@ export async function polyYesToken(conditionId: string): Promise<string | null> 
 }
 
 export async function polyBook(tokenId: string): Promise<Book | null> {
-  const r = await fetch(`https://clob.polymarket.com/book?token_id=${encodeURIComponent(tokenId)}`);
+  const r = await timed(`https://clob.polymarket.com/book?token_id=${encodeURIComponent(tokenId)}`);
   if (!r.ok) return null;
   const b = (await r.json()) as any;
   const lv = (a: any[]) => (a ?? []).map((l) => ({ price: n(l.price), size: n(l.size) }));
@@ -27,7 +28,7 @@ export async function kalshiBook(ticker: string, keyId: string, pemRaw: string):
   const sig = sign("sha256", Buffer.from(ts + "GET" + path), {
     key: pem, padding: constants.RSA_PKCS1_PSS_PADDING, saltLength: constants.RSA_PSS_SALTLEN_DIGEST,
   }).toString("base64");
-  const r = await fetch(`https://api.elections.kalshi.com${path}`, {
+  const r = await timed(`https://api.elections.kalshi.com${path}`, {
     headers: { "KALSHI-ACCESS-KEY": keyId, "KALSHI-ACCESS-TIMESTAMP": ts, "KALSHI-ACCESS-SIGNATURE": sig },
   });
   if (!r.ok) return null;
